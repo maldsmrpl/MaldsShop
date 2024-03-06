@@ -39,6 +39,11 @@
                         @{
                             if (User.Identity.IsAuthenticated)
                             {
+                                <li>
+                                    <div>
+                                        <a class="nav-link" role="button">Shopping Cart</a>
+                                    </div>
+                                </li>
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">@User.Identity.Name</a>
                                     <div class="dropdown-menu">
@@ -50,6 +55,7 @@
                             }
                             else
                             {
+                                
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Account</a>
                                     <div class="dropdown-menu">

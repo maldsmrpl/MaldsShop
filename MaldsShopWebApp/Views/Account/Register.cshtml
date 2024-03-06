@@ -9,7 +9,6 @@
 	<eldset control-id="ControlID-9">
 		<br />
 		<legend>Create new account</legend>
-
 		@if (TempData["Error"] != null)
 		{
 			<div class="col-md-12 alert alert-danger">
@@ -17,7 +16,6 @@
 				<span><strong>Sorry!</strong> - @TempData["Error"]</span>
 			</div>
 		}
-
 		<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 		<div class ="form-group">
 			<label asp-for="EmailAddress" class="form-label mt-4"></label>

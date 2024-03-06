@@ -1,10 +1,18 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace MaldsShopWebApp.Models
+public class AppUser : IdentityUser
 {
-    public class AppUser : IdentityUser
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public DateTime AddedTime { get; set; }
+    public DateTime? LastActivityTime { get; set; }
+    public int? ShippingCartId { get; set; }
+    public virtual ShippingCart? ShippingCart { get; set; }
+    public virtual ICollection<Order>? Orders { get; set; }
+    public virtual ICollection<Review>? Reviews { get; set; }
+    public AppUser()
     {
-        DateTime AddedTime { get; set; }
-        DateTime? LastActivityTime {  get; set; }
+        Orders = new HashSet<Order>();
+        Reviews = new HashSet<Review>();
     }
 }

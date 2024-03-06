@@ -19,6 +19,18 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
+        modelBuilder.Entity<Product>()
+            .HasQueryFilter(p => !p.IsDeleted);
+
+        modelBuilder.Entity<AppUser>()
+            .HasOne(u => u.ShippingCart)
+            .WithOne(c => c.AppUser)
+            .HasForeignKey<ShippingCart>(c => c.AppUserId);
+
+        modelBuilder.Entity<OrderItem>()
+            .HasQueryFilter(oi => !oi.Product.IsDeleted);
+
+        modelBuilder.Entity<ShippingCartItem>()
+            .HasQueryFilter(sci => !sci.Product.IsDeleted);
     }
 }

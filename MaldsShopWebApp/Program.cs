@@ -1,4 +1,3 @@
-using MaldsShopWebApp.Data;
 using MaldsShopWebApp.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;

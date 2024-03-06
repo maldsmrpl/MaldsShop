@@ -3,7 +3,7 @@
 public class Review
 {
     [Key]
-    public int Id { get; set; }
+    public int ReviewId { get; set; }
     public string AppUserId { get; set; }
     public DateTime AddedTime { get; set; }
     public DateTime? EditedTime { get; set; }

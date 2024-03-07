@@ -1,0 +1,34 @@
+﻿@model IndexProductViewModel
+
+<a type="button" class="btn btn-sm btn-outline-danger" asp-controller="Product" asp-action="Create">
+    Create
+</a>
+
+Products:
+
+<ul class="row feature-list feature-list-sm">
+    @foreach (var product in Model.Products)
+    {
+        <li class="col-12 col-md-6 col-lg-4">
+            <div class="card border-primary mb-3" style="max-width: 40rem;">
+                <div class="card shadow-sm">
+                    <div class="card-header">@product.Title</div>
+                    <div class="card-body">
+                        <img class="card-img-top" src="@product.ImageUrl" alt="Card image cap">
+                        <p class="card-text">@product.Description</p>
+                        <h3>Price: @Math.Floor((decimal)product.Price / 100).<small>@(string.Format("{0:00}", product.Price % 100))</small> UAH</h3>
+                        
+                        <p class="card-text">In stock: @product.InStock pcs</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                            </div>
+                            <small class="text-body-secondary">9 mins</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    }
+</ul>

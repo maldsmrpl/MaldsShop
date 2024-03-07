@@ -1,0 +1,34 @@
+﻿@model CreateProductViewModel
+
+<h1>Create product</h1>
+<br />
+<form method="post" asp-action="Create" enctype="multipart/form-data">
+    <div>
+        <label asp-for="Title" class="form-label mt-4"></label>
+        <input asp-for="Title" class="form-control" placeholder="Title" autocomplete="off" control-id="ControlID-12">
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Description" class="form-label mt-4"></label>
+        <input asp-for="Description" class="form-control" placeholder="Description" autocomplete="off" control-id="ControlID-12">
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Price" class="form-label mt-4"></label>
+        <input asp-for="Price" class="form-control" placeholder="Price" autocomplete="off" control-id="ControlID-12">
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="InStock" class="form-label mt-4"></label>
+        <input asp-for="InStock" class="form-control" placeholder="InStock" autocomplete="off" control-id="ControlID-12">
+        <span asp-validation-for="InStock" class="text-danger"></span>
+    </div>
+    <div>a
+        <label asp-for="ImageUrl" class="form-label mt-4">Product image</label>
+        <input asp-for="ImageUrl" class="form-control" type="file" id="formFile" control-id="ControlID-17">
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary" control-id="ControlID-32">Create product</button>
+    </div>
+</form>

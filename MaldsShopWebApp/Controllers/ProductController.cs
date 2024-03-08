@@ -1,4 +1,5 @@
-﻿using MaldsShopWebApp.Data;
+﻿using CloudinaryDotNet.Actions;
+using MaldsShopWebApp.Data;
 using MaldsShopWebApp.Interfaces;
 using MaldsShopWebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -35,7 +36,7 @@ namespace MaldsShopWebApp.Controllers
             return View();
         }
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Create(CreateProductViewModel productVM)
         {
             if (ModelState.IsValid)
@@ -74,7 +75,7 @@ namespace MaldsShopWebApp.Controllers
                 ImageUrl = product.ImageUrl,
                 Reviews = product.Reviews
             };
-            
+
             if (product != null)
             {
                 if (product.InStock == null) detailsVM.InStock = 0;
@@ -113,6 +114,59 @@ namespace MaldsShopWebApp.Controllers
                 Console.WriteLine("Product not found");
                 return RedirectToAction("Index");
             }
+        }
+        [HttpPost]
+        [Authorize(Roles = UserRoles.Admin)]
+        public async Task<IActionResult> Edit(int id, EditProductViewModel editVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Failed to edit product");
+                return View("Edit", editVM);
+            }
+
+            var oldProduct = await _productRepository.GetByIdAsync(id);
+
+            editVM.Reviews = oldProduct.Reviews;
+            editVM.ProductId = id;
+
+            if (oldProduct == null) return View("Error");
+
+            var photoResult = new ImageUploadResult();
+
+            if (editVM.Image != null)
+            {
+                photoResult = await _photoService.AddPhotoAsync(editVM.Image);
+                await _photoService.DeletePhotoAsync(oldProduct.ImageUrl);
+                if (photoResult.Error != null)
+                {
+                    ModelState.AddModelError("Image", "Photo upload failed");
+                    return View(editVM);
+                }
+            }
+
+            var product = new Product
+            {
+                Title = editVM.Title,
+                Description = editVM.Description,
+                InStock = editVM.InStock,
+                Price = editVM.Price,
+                ProductId = id,
+                Reviews = editVM.Reviews
+            };
+
+            if (photoResult.Bytes > 0)
+            {
+                product.ImageUrl = photoResult.Url.ToString();
+            }
+            else
+            {
+                product.ImageUrl = editVM.ImageUrl;
+            }
+
+            _productRepository.Update(product);
+
+            return RedirectToAction("Index");
         }
     }
 }

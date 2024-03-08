@@ -12,11 +12,11 @@
 <h2>Edit product</h2>
 
 <form method="post" asp-action="Edit" enctype="multipart/form-data">
-    <input type="hidden" value="AppUserId" id="AppUserId" />
     <div class="container mt-4">
         <div class="row">
             <div class="col-md-6">
                 <img src="@Model.ImageUrl" class="img-fluid" alt="@Model.Title" />
+                <input asp-for="ImageUrl" type="hidden" value="@Model.ImageUrl" id="ImageUrl" />
             </div>
 
             <div class="col-md-6">
@@ -62,8 +62,8 @@
                 <div class="row mb-2">
                     <label class="col-sm-4 col-form-label">Product image</label>
                     <div class="col-sm-8">
-                        <input asp-for="ImageUrl" class="form-control" type="file" id="formFile">
-                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                        <input asp-for="Image" class="form-control" type="file" id="formFile">
+                        <span asp-validation-for="Image" class="text-danger"></span>
                     </div>
                 </div>
 

@@ -6,18 +6,41 @@
 
 Products:
 
-<ul class="row feature-list feature-list-sm">
+<div class="row feature-list feature-list-sm" style="list-style-type: none;">
+    @{
+        int counter = 0;
+    }
+
     @foreach (var product in Model.Products)
     {
-        <li class="col-12 col-md-6 col-lg-4">
+        var headingId = $"heading{counter}";
+        var collapseId = $"collapse{counter}";
+
+        <div class="col-12 col-md-6 col-lg-4">
             <div class="card border-primary mb-3" style="max-width: 40rem;">
                 <div class="card shadow-sm">
-                    <div class="card-header">@product.Title</div>
+                    <div class="card-header"><h4>@product.Title</h4></div>
                     <div class="card-body">
                         <img class="card-img-top" src="@product.ImageUrl" alt="Card image cap">
-                        <p class="card-text">@product.Description</p>
+                        <br />
+                        <div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="@headingId">
+                                    <a class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseId" aria-expanded="false" aria-controls="@collapseId">
+                                        Item description <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-compact-down" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M1.553 6.776a.5.5 0 0 1 .67-.223L8 9.44l5.776-2.888a.5.5 0 1 1 .448.894l-6 3a.5.5 0 0 1-.448 0l-6-3a.5.5 0 0 1-.223-.67" />
+                                        </svg>
+                                    </a>
+                                </h2>
+                                <div id="@collapseId" class="accordion-collapse collapse" aria-labelledby="@headingId" data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <p class="card-text">@product.Description</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
                         <h3>Price: @Math.Floor((decimal)product.Price / 100).<small>@(string.Format("{0:00}", product.Price % 100))</small> UAH</h3>
-                        
                         <p class="card-text">In stock: @product.InStock pcs</p>
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="btn-group">
@@ -29,6 +52,7 @@ Products:
                     </div>
                 </div>
             </div>
-        </li>
+        </div>
+        counter++;
     }
-</ul>
+</div>

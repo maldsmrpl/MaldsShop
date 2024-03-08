@@ -1,0 +1,81 @@
+﻿@using MaldsShopWebApp.ViewModels
+@model EditProductViewModel
+
+@{
+    bool isAuthenticated = User.Identity?.IsAuthenticated == true;
+}
+
+@{
+    ViewData["Title"] = Model.Title + "Edit";
+}
+
+<h2>Product details</h2>
+
+<form method="post" asp-action="Edit" enctype="multipart/form-data">
+    <input type="hidden" value="AppUserId" id="AppUserId" />
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6">
+                <img src="@Model.ImageUrl" class="img-fluid" alt="@Model.Title" />
+            </div>
+
+            <div class="col-md-6">
+                <div class="row mb-2">
+                    <label class="col-sm-4 col-form-label">Product ID</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-plaintext" value="@Model.ProductId">
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <label class="col-sm-4 col-form-label">Title</label>
+                    <div class="col-sm-8">
+                        <input asp-for="Title" class="form-control" placeholder="Title">
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <label class="col-sm-4 col-form-label">Description</label>
+                    <div class="col-sm-8">
+                        <textarea rows="3" asp-for="Description" class="form-control" placeholder="Description"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <label class="col-sm-4 col-form-label">In Stock</label>
+                    <div class="col-sm-8">
+                        <input asp-for="InStock" class="form-control" placeholder="InStock">
+                        <span asp-validation-for="InStock" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <label class="col-sm-4 col-form-label">Price</label>
+                    <div class="col-sm-8">
+                        <input asp-for="Price" class="form-control" placeholder="Price">
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <label class="col-sm-4 col-form-label">Product image</label>
+                    <div class="col-sm-8">
+                        <input asp-for="ImageUrl" class="form-control" type="file" id="formFile">
+                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="button" class="btn btn-outline-primary" onclick="history.back();">
+                        Go Back
+                    </button>
+                    <button type="submit" class="btn btn-outline-danger">
+                        Edit product
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

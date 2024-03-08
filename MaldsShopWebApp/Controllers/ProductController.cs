@@ -1,5 +1,7 @@
-﻿using MaldsShopWebApp.Interfaces;
+﻿using MaldsShopWebApp.Data;
+using MaldsShopWebApp.Interfaces;
 using MaldsShopWebApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RunGroopWebApp.Services;
 
@@ -33,12 +35,11 @@ namespace MaldsShopWebApp.Controllers
             return View();
         }
         [HttpPost]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> Create(CreateProductViewModel productVM)
         {
             if (ModelState.IsValid)
             {
-                if (!_userRepository.IsAdminAsync(productVM.AppUserEmail).Result) return RedirectToAction("Index");
-
                 var result = await _photoService.AddPhotoAsync(productVM.ImageUrl);
 
                 var product = new Product
@@ -86,13 +87,13 @@ namespace MaldsShopWebApp.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> Edit(int id, string appUserEmail)
+        [Authorize(Roles = UserRoles.Admin)]
+        public async Task<IActionResult> Edit(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
             if (product == null) return RedirectToAction("Index");
             var editVM = new EditProductViewModel()
             {
-                AppUserEmail = appUserEmail,
                 ProductId = product.ProductId,
                 Title = product.Title,
                 Description = product.Description,

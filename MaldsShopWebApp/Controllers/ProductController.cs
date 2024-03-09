@@ -166,7 +166,25 @@ namespace MaldsShopWebApp.Controllers
 
             _productRepository.Update(product);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Home");
+        }
+        [HttpGet, ActionName("Delete")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var productDetails = await _productRepository.GetByIdAsync(id);
+
+            if (productDetails == null)
+            {
+                return View("Error");
+            }
+
+            if (!string.IsNullOrEmpty(productDetails.ImageUrl))
+            {
+                _ = _photoService.DeletePhotoAsync(productDetails.ImageUrl);
+            }
+
+            _productRepository.Delete(productDetails);
+            return RedirectToAction("Index", "Home");
         }
     }
 }

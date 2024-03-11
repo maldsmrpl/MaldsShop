@@ -10,11 +10,13 @@ namespace MaldsShopWebApp.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IProductRepository _productRepository;
+        private readonly IShippingCartRepository _shippingCartRepository;
 
-        public HomeController(ILogger<HomeController> logger, IProductRepository productRepository)
+        public HomeController(ILogger<HomeController> logger, IProductRepository productRepository, IShippingCartRepository shippingCartRepository)
         {
             _logger = logger;
             _productRepository = productRepository;
+            _shippingCartRepository = shippingCartRepository;
         }
 
         [HttpGet]
@@ -24,6 +26,7 @@ namespace MaldsShopWebApp.Controllers
 
             var viewModel = new IndexProductViewModel
             {
+                ShippingCart = await _shippingCartRepository.GetShippingCartByUserEmail(User.Identity.Name),
                 Products = result.Items,
                 CurrentPage = page,
                 TotalPages = (int)Math.Ceiling(result.TotalCount / (double)pageSize),

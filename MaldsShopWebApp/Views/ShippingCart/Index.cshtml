@@ -1,0 +1,19 @@
+﻿@model MaldsShopWebApp.ViewModels.ShippingCartViewModel
+
+You Shopping Cart:
+<br />
+@{
+    int i = 1;
+}
+@foreach (var item in Model.ShippingCart.ShippingCartItems)
+{
+    <p>@i</p>
+
+    <p> - </p>
+    <h2>@item.Product.Title</h2>
+
+    <p> - </p>
+
+    <p>@item.Quantity</p>
+<br />
+}

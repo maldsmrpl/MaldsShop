@@ -7,7 +7,7 @@ public class AppUser : IdentityUser
     public DateTime AddedTime { get; set; }
     public DateTime? LastActivityTime { get; set; }
     public int? ShippingCartId { get; set; }
-    public virtual ShippingCart? ShippingCart { get; set; }
+    public virtual ShippingCart ShippingCart { get; set; } = new ShippingCart();
     public virtual ICollection<Order>? Orders { get; set; }
     public virtual ICollection<Review>? Reviews { get; set; }
     public AppUser()

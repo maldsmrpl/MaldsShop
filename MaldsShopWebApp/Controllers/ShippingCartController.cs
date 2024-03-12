@@ -1,5 +1,9 @@
-﻿using MaldsShopWebApp.Interfaces;
+﻿using MaldsShopWebApp.Helpers;
+using MaldsShopWebApp.Interfaces;
+using MaldsShopWebApp.Models;
 using MaldsShopWebApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,50 +14,142 @@ namespace MaldsShopWebApp.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IShippingCartRepository _shippingCartRepository;
         private readonly IProductRepository _productRepository;
-        private readonly ApplicationDbContext _context;
+        private readonly CartCountSession _cartCountSession;
 
-        public ShippingCartController(IUserRepository userRepository, IShippingCartRepository shippingCartRepository, IProductRepository productRepository, ApplicationDbContext context)
+        public ShippingCartController(
+            IUserRepository userRepository, 
+            IShippingCartRepository shippingCartRepository, 
+            IProductRepository productRepository,
+            CartCountSession cartCountSession
+            )
         {
             _userRepository = userRepository;
             _shippingCartRepository = shippingCartRepository;
             _productRepository = productRepository;
-            _context = context;
+            _cartCountSession = cartCountSession;
         }
-        public IActionResult Index()
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
             var userEmail = User.Identity.Name;
-            var user = _userRepository.GetByEmail(userEmail);
+            var user = await _userRepository.GetByEmail(userEmail);
             var shippingCartVM = new ShippingCartViewModel()
             {
-                ShippingCart = _shippingCartRepository.GetShippingCartByUserEmail(userEmail).Result,
+                ShippingCart = user.ShippingCart,
                 UserEmail = userEmail
             };
+
+            //_cartCountSession.UpdateCount(User.Identity.Name, HttpContext);
+
+            var cartItems = user.ShippingCart.ShippingCartItems;
+            var itemsInTheCart = 0;
+            foreach (var item in cartItems)
+            {
+                itemsInTheCart = itemsInTheCart + item.Quantity;
+            }
+
+            HttpContext.Session.SetInt32("CartCount", itemsInTheCart);
+
             return View(shippingCartVM);
         }
+        [Authorize]
         [HttpPost]
-        public IActionResult AddToCart(int productId)
+        public async Task<IActionResult> AddToCart(int productId, bool isRedirected)
         {
             var userEmail = User.Identity.Name;
-            var user = _userRepository.GetByEmail(userEmail).Result;
-            var product = _productRepository.GetByIdAsync(productId).Result;
-            _context.Products.Attach(product);
+            var user = await _userRepository.GetByEmail(userEmail);
+            var product = await _productRepository.GetByIdAsync(productId);
 
             if (user != null && product != null)
             {
-                var cartItem = new ShippingCartItem()
+                var shippingCart = await _shippingCartRepository.GetShippingCartByUserEmail(userEmail);
+                var cartItem = shippingCart.ShippingCartItems.FirstOrDefault(ci => ci.ProductId == productId);
+
+                if (cartItem != null)
                 {
-                    Quantity = 1,
-                    ProductId = product.ProductId
-                };
-                _shippingCartRepository.AddToShippingCart(cartItem, userEmail);
-                var cartVM = new ShippingCartViewModel()
+                    cartItem.Quantity += 1;
+                }
+                else
+                {
+                    cartItem = new ShippingCartItem
+                    {
+                        Quantity = 1,
+                        ProductId = productId,
+                        ShippingCartId = shippingCart.ShippingCartId
+                    };
+                    shippingCart.ShippingCartItems.Add(cartItem);
+                }
+
+                await _shippingCartRepository.SaveAsync();
+
+                var updatedUser = await _userRepository.GetByEmail(userEmail);
+
+                var cartVM = new ShippingCartViewModel
                 {
                     UserEmail = userEmail,
-                    ShippingCart = _shippingCartRepository.GetShippingCartByUserEmail(userEmail).Result
+                    ShippingCart = updatedUser.ShippingCart
                 };
-                return View("Index");
+
+                if (isRedirected)
+                {
+                    View("Index", cartVM);
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    View("Index", cartVM);
+                    return RedirectToAction("Index", "ShippingCart");
+                }
             }
             return View("Error");
+        }
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> RemoveFromCart(int productId, bool isRedirected)
+        {
+            var userEmail = User.Identity.Name;
+            var user = await _userRepository.GetByEmail(userEmail);
+            var product = await _productRepository.GetByIdAsync(productId);
+
+            if (user != null && product != null)
+            {
+                var shippingCart = await _shippingCartRepository.GetShippingCartByUserEmail(userEmail);
+                var cartItem = shippingCart.ShippingCartItems.FirstOrDefault(ci => ci.ProductId == productId);
+
+                if (cartItem != null)
+                {
+                    cartItem.Quantity -= 1;
+                    if (cartItem.Quantity <= 0)
+                    {
+                        shippingCart.ShippingCartItems.Remove(cartItem);
+                    }
+
+                    await _shippingCartRepository.SaveAsync();
+
+                    var updatedUser = await _userRepository.GetByEmail(userEmail);
+                    var cartVM = new ShippingCartViewModel
+                    {
+                        UserEmail = userEmail,
+                        ShippingCart = updatedUser.ShippingCart
+                    };
+                    if (isRedirected)
+                    {
+                        View("Index", cartVM);
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        View("Index", cartVM);
+                        return RedirectToAction("Index", "ShippingCart");
+                    }
+                }
+                else
+                {
+                    return View("Error", new ErrorViewModel { RequestId = "Product not found in cart" });
+                }
+            }
+            return View("Error", new ErrorViewModel { RequestId = "User or Product not found" });
         }
     }
 }

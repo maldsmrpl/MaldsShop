@@ -75,5 +75,9 @@ namespace MaldsShopWebApp.Repository
                 TotalCount = totalCount
             };
         }
+        public void AttachProduct(Product product)
+        {
+            _context.Products.Attach(product);
+        }
     }
 }

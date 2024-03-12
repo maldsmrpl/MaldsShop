@@ -16,8 +16,10 @@ namespace MaldsShopWebApp.Repository
         public async Task<ShippingCart> GetShippingCartByUserEmail(string userEmail)
         {
             var user = await _userRepository.GetByEmail(userEmail);
-            return await _context.ShippingCarts.Include(i => i.ShippingCartItems)
-                        .FirstOrDefaultAsync(e => e.AppUserId == user.Id);
+            return await _context.ShippingCarts
+                .Include(i => i.ShippingCartItems)
+                .ThenInclude(p => p.Product)
+                .FirstOrDefaultAsync(e => e.AppUserId == user.Id);
         }
         public async Task<bool> AddToShippingCart(ShippingCartItem item, string userEmail)
         {
@@ -40,9 +42,9 @@ namespace MaldsShopWebApp.Repository
             return await SaveAsync();
         }
 
-        public bool DeleteFromShippingCart(ShippingCartItem item, string userEmail)
+        public async Task<bool> DeleteFromShippingCart(ShippingCartItem item, string userEmail)
         {
-            var shippingCart = GetShippingCartByUserEmail(userEmail).Result;
+            var shippingCart = await GetShippingCartByUserEmail(userEmail);
             if (shippingCart != null)
             {
                 shippingCart.ShippingCartItems.FirstOrDefault(i => i.ShippingCartItemId == item.ShippingCartItemId);
@@ -68,7 +70,7 @@ namespace MaldsShopWebApp.Repository
             }
             catch (Exception ex)
             {
-                // Consider logging the exception
+                Console.WriteLine(ex);
                 throw;
             }
         }

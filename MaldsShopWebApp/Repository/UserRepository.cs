@@ -85,9 +85,17 @@ namespace MaldsShopWebApp.Repository
                 return false;
             }
         }
-        public Task<AppUser> GetByEmail(string email)
+        public async Task<AppUser> GetByEmail(string email)
         {
-            return _context.Users.Include(s => s.ShippingCart).FirstOrDefaultAsync(e => e.NormalizedEmail == email.ToUpper());
+            var user = await _context.Users
+                .Include(s => s.ShippingCart)
+                .Include(c => c.ShippingCart.ShippingCartItems)
+                .ThenInclude(p => p.Product)
+                .FirstOrDefaultAsync(e => e.NormalizedEmail == email.ToUpper());
+
+            if (user == null) return new AppUser();
+
+            return user;
         }
     }
 }

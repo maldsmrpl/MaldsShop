@@ -180,7 +180,7 @@ namespace MaldsShopWebApp.Controllers
 
             if (!string.IsNullOrEmpty(productDetails.ImageUrl))
             {
-                _ = _photoService.DeletePhotoAsync(productDetails.ImageUrl);
+                var deletionResult = _photoService.DeletePhotoAsync(productDetails.ImageUrl);
             }
 
             _productRepository.Delete(productDetails);

@@ -13,7 +13,7 @@ namespace MaldsShopWebApp.Repository
             _context = context;
             _userRepository = userRepository;
         }
-        public async Task<ShippingCart> GetShippingCartByUserEmail(string userEmail)
+        public async Task<ShippingCart>? GetShippingCartByUserEmail(string userEmail)
         {
             var user = await _userRepository.GetByEmail(userEmail);
             return await _context.ShippingCarts
@@ -56,10 +56,10 @@ namespace MaldsShopWebApp.Repository
             var saved = _context.SaveChanges();
             return saved > 0 ? true : false;
         }
-        public bool Add(ShippingCart shippingCart)
+        public Task<bool> Add(ShippingCart shippingCart)
         {
             _context.ShippingCarts.Add(shippingCart);
-            return Save();
+            return SaveAsync();
         }
         public async Task<bool> SaveAsync()
         {

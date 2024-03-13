@@ -64,8 +64,18 @@ namespace MaldsShopWebApp.Controllers
             if (user != null && product != null)
             {
                 var shippingCart = await _shippingCartRepository.GetShippingCartByUserEmail(userEmail);
-                var cartItem = shippingCart.ShippingCartItems.FirstOrDefault(ci => ci.ProductId == productId);
 
+                if (shippingCart == null)
+                {
+                    shippingCart = new ShippingCart
+                    {
+                        AppUserId = user.Id,
+                        ShippingCartItems = new List<ShippingCartItem>(),
+                    };
+                    await _shippingCartRepository.Add(shippingCart);
+                }
+
+                var cartItem = shippingCart.ShippingCartItems.FirstOrDefault(ci => ci.ProductId == productId);
                 if (cartItem != null)
                 {
                     cartItem.Quantity += 1;

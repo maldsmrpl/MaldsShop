@@ -5,6 +5,7 @@ using MaldsShopWebApp.Controllers;
 using MaldsShopWebApp.Interfaces;
 using MaldsShopWebApp.Repository;
 using MaldsShopWebApp.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -37,11 +38,15 @@ namespace MaldsShopWebApp.Tests.Controllers
             A.CallTo(() => _productRepository.GetAllAsync()).Returns(products);
 
             //Act
-            var result = _controller.Index();
+            var result = await _controller.Index();
 
             //Assert
             result.Should().NotBeNull();
-            result.Should().BeOfType<Task<IActionResult>>();
+            result.Should().BeOfType<ViewResult>();
+            var viewResult = result as ViewResult;
+            viewResult.Model.Should().BeOfType<IndexProductViewModel>();
+            var model = viewResult.Model as IndexProductViewModel;
+            model.Products.Should().BeEquivalentTo(products);
         }
         [Fact]
         public async void ProductController_CreateGet_ReturnSuccess()
@@ -72,6 +77,41 @@ namespace MaldsShopWebApp.Tests.Controllers
             //Assert
             result.Should().NotBeNull();
             result.Should().BeOfType<Task<IActionResult>>();
+        }
+        [Fact]
+        public async void ProductController_CreatePost_ReturnsViewWithModel()
+        {
+            // Arrange
+            var productVM = A.Dummy<CreateProductViewModel>();
+            _controller.ModelState.AddModelError("Test", "Test Error");
+
+            // Act
+            var result = await _controller.Create(productVM);
+
+            // Assert
+            result.Should().BeOfType<ViewResult>();
+            var viewResult = result as ViewResult;
+            viewResult.Model.Should().BeSameAs(productVM);
+        }
+        [Fact]
+        public async void ProductController_CreatePost_AddsProductAndRedirects()
+        {
+            // Arrange
+            var productVM = A.Fake<CreateProductViewModel>();
+            var mockImage = A.Fake<IFormFile>();
+            productVM.ImageUrl = mockImage;
+            var photoResult = new ImageUploadResult { Url = new System.Uri("http://example.com/image.jpg") };
+            A.CallTo(() => _photoService.AddPhotoAsync(A<IFormFile>.Ignored)).Returns(photoResult);
+
+            // Act
+            var result = await _controller.Create(productVM);
+
+            // Assert
+            A.CallTo(() => _productRepository.Add(A<Product>.Ignored)).MustHaveHappenedOnceExactly();
+            result.Should().BeOfType<RedirectToActionResult>();
+            var redirectResult = result as RedirectToActionResult;
+            redirectResult.ActionName.Should().Be("Index");
+            redirectResult.ControllerName.Should().Be("Home");
         }
         [Fact]
         public async void ProductController_DetailsGet_ReturnSuccess()
@@ -105,6 +145,21 @@ namespace MaldsShopWebApp.Tests.Controllers
             result.Should().NotBeNull();
             result.Should().BeOfType<Task<IActionResult>>();
         }
+        public async void ProductController_EditGet_ReturnsViewWithProduct()
+        {
+            // Arrange
+            var id = 1;
+            var product = A.Dummy<Product>();
+            A.CallTo(() => _productRepository.GetByIdAsync(id)).Returns(product);
+
+            // Act
+            var result = await _controller.Edit(id);
+
+            // Assert
+            result.Should().BeOfType<ViewResult>();
+            var viewResult = result as ViewResult;
+            viewResult.Model.Should().BeOfType<EditProductViewModel>();
+        }
         [Fact]
         public async void ProductController_EditPost_ReturnSuccess()
         {
@@ -125,6 +180,39 @@ namespace MaldsShopWebApp.Tests.Controllers
             result.Should().BeOfType<Task<IActionResult>>();
         }
         [Fact]
+        public async void ProductController_EditPost_InvalidModel()
+        {
+            // Arrange
+            var editVM = A.Dummy<EditProductViewModel>();
+            _controller.ModelState.AddModelError("Test", "Test Error");
+
+            // Act
+            var result = await _controller.Edit(editVM.ProductId, editVM);
+
+            // Assert
+            result.Should().BeOfType<ViewResult>();
+            var viewResult = result as ViewResult;
+            viewResult.Model.Should().BeSameAs(editVM);
+        }
+        [Fact]
+        public async void ProductController_EditPost_ValidModel()
+        {
+            // Arrange
+            var id = 1;
+            var editVM = A.Fake<EditProductViewModel>();
+            var oldProduct = A.Dummy<Product>();
+            A.CallTo(() => _productRepository.GetByIdAsync(id)).Returns(oldProduct);
+            var photoResult = new ImageUploadResult();
+            A.CallTo(() => _photoService.AddPhotoAsync(editVM.Image)).Returns(photoResult);
+
+            // Act
+            var result = await _controller.Edit(id, editVM);
+
+            // Assert
+            A.CallTo(() => _productRepository.Update(A<Product>.Ignored)).MustHaveHappenedOnceExactly();
+            result.Should().BeOfType<RedirectToActionResult>();
+        }
+        [Fact]
         public async void ProductController_DeleteProduct_ReturnSuccess()
         {
             //Arrange
@@ -140,6 +228,21 @@ namespace MaldsShopWebApp.Tests.Controllers
             //Assert
             result.Should().NotBeNull();
             result.Should().BeOfType<Task<IActionResult>>();
+        }
+        [Fact]
+        public async void ProductController_DeletesProductAndRedirects()
+        {
+            // Arrange
+            var id = 1;
+            var productDetails = A.Dummy<Product>();
+            A.CallTo(() => _productRepository.GetByIdAsync(id)).Returns(productDetails);
+
+            // Act
+            var result = await _controller.DeleteProduct(id);
+
+            // Assert
+            A.CallTo(() => _productRepository.Delete(A<Product>.Ignored)).MustHaveHappenedOnceExactly();
+            result.Should().BeOfType<RedirectToActionResult>();
         }
     }
 }

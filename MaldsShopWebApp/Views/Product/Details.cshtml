@@ -106,7 +106,7 @@
                     foreach (var review in Model.Reviews)
                     {
                         <div class="border p-2 mb-2">
-                            <p>Reviewed by user ID: @review.AppUserId</p>
+                            <p>Reviewed by user ID: @review.AppUser.Email</p>
                             <p>@review.ReviewText</p>
                             <p>Score: @review.ReviewScore</p>
                             <p>Reviewed on: @review.AddedTime.ToString("g") @(review.EditedTime.HasValue ? $"(Edited: {review.EditedTime.Value.ToString("g")})" : "")</p>

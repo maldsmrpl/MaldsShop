@@ -42,7 +42,7 @@ namespace MaldsShopWebApp.Repository
         }
         public async Task<PaginatedResult<Product>> GetAllPaginatedAsync(int pageIndex, int pageSize, string sortBy = "Name")
         {
-            IQueryable<Product> query = _context.Products;
+            IQueryable<Product> query = _context.Products.Include(r => r.Reviews);
 
             switch (sortBy.ToLower())
             {

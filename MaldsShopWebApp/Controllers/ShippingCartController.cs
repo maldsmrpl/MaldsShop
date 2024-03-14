@@ -40,8 +40,6 @@ namespace MaldsShopWebApp.Controllers
                 UserEmail = userEmail
             };
 
-            //_cartCountSession.UpdateCount(User.Identity.Name, HttpContext);
-
             var cartItems = user.ShippingCart.ShippingCartItems;
             var itemsInTheCart = 0;
             foreach (var item in cartItems)

@@ -11,11 +11,11 @@
 }
 
 <h2>
-    <button type="button" class="btn btn-outline-primary" onclick="history.back();">
+    <a type="button" class="btn btn-outline-primary" asp-controller="Home" asp-action="Index">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z" />
-        </svg> Go Back
-    </button>
+        </svg>
+    </a>
     Product details
 </h2>
 
@@ -48,23 +48,59 @@
             </div>
 
             <div class="row mb-2">
+                <label class="col-sm-4 col-form-label">Items sold</label>
+                <div class="col-sm-8">
+                    <input type="text" readonly class="form-control-plaintext" value="0 pcs">
+                </div>
+            </div>
+
+            <div class="row mb-2">
                 <label class="col-sm-4 col-form-label">In Stock</label>
                 <div class="col-sm-8">
-                    <p>@Model.InStock?.ToString() ?? " Not available"></p>
+                    @{
+                        string inStockQuantity;
+                        if (Model.InStock != null)
+                        {
+                            inStockQuantity = Model.InStock.ToString();
+                        }
+                        else
+                        {
+                            inStockQuantity = "Not available";
+                        }
+                    }
+                    <input type="text" readonly class="form-control-plaintext" value="@inStockQuantity pcs">
                 </div>
             </div>
 
             <div class="row mb-2">
                 <label class="col-sm-4 col-form-label">Price</label>
                 <div class="col-sm-8">
-                    <input type="text" readonly class="form-control-plaintext" value="$@Model.Price">
+                    @{
+                        double price = Model.Price / 100;
+                        string priceText = price.ToString("0.00") + " UAH";
+                    }
+                    <input type="text" readonly class="form-control-plaintext" value="@priceText">
+                </div>
+            </div>
+
+            <div class="row mb-2">
+                <label class="col-sm-4 col-form-label">Total reviews</label>
+                <div class="col-sm-8">
+                    <input type="text" readonly class="form-control-plaintext" value="Reviews">
+                </div>
+            </div>
+
+            <div class="row mb-2">
+                <label class="col-sm-4 col-form-label">Avarage score</label>
+                <div class="col-sm-8">
+                    <input type="text" readonly class="form-control-plaintext" value="Score">
                 </div>
             </div>
 
             <div>
-                <button type="button" class="btn btn-outline-primary" onclick="history.back();">
+                <a type="button" class="btn btn-outline-primary" asp-controller="Home" asp-action="Index">
                     Go Back
-                </button>
+                </a>
                 @if (isAuthenticated)
                 {
                     <a asp-controller="Review" asp-action="Create" asp-route-id="@Model.ProductId" type="button" class="btn btn-primary">
@@ -106,7 +142,7 @@
                     foreach (var review in Model.Reviews)
                     {
                         <div class="border p-2 mb-2">
-                            <p>Reviewed by user ID: @review.AppUser.Email</p>
+                            <p>Reviewed by user: @review.AppUser.Email</p>
                             <p>@review.ReviewText</p>
                             <p>Score: @review.ReviewScore</p>
                             <p>Reviewed on: @review.AddedTime.ToString("g") @(review.EditedTime.HasValue ? $"(Edited: {review.EditedTime.Value.ToString("g")})" : "")</p>
@@ -119,7 +155,8 @@
                                     <a asp-controller="Review" asp-action="Delete" asp-route-id="@review.ReviewId" type="button" class="btn btn-outline-danger">
                                         Delete
                                     </a>
-                                } }
+                                } 
+                            }
                         </div>
                     }
                 }

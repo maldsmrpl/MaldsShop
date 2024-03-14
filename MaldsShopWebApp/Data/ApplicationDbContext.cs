@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using MaldsShopWebApp.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 public class ApplicationDbContext : IdentityDbContext<AppUser>
@@ -19,6 +20,8 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
+
         modelBuilder.Entity<Product>()
             .HasQueryFilter(p => !p.IsDeleted);
 
@@ -32,5 +35,42 @@ public class ApplicationDbContext : IdentityDbContext<AppUser>
 
         modelBuilder.Entity<ShippingCartItem>()
             .HasQueryFilter(sci => !sci.Product.IsDeleted);
+    }
+    public async Task SoftDeleteProductAsync(int productId)
+    {
+        var product = await Products.FirstOrDefaultAsync(p => p.ProductId == productId);
+        if (product != null)
+        {
+            product.IsDeleted = true;
+            await SaveChangesAsync();
+        }
+    }
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        OnBeforeSaving();
+        return base.SaveChanges(acceptAllChangesOnSuccess);
+    }
+
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        OnBeforeSaving();
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+
+    private void OnBeforeSaving()
+    {
+        foreach (var entry in ChangeTracker.Entries<SoftDeleteEntity>())
+        {
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    entry.CurrentValues["IsDeleted"] = false;
+                    break;
+                case EntityState.Deleted:
+                    entry.State = EntityState.Modified;
+                    entry.CurrentValues["IsDeleted"] = true;
+                    break;
+            }
+        }
     }
 }

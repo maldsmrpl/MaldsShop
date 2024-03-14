@@ -61,9 +61,9 @@
 <h4 style="text-align: right;">Total Price: @Math.Floor((decimal)totalPrice / 100).<small>@(string.Format("{0:00}", totalPrice % 100))</small> UAH</h4>
 
 <div style="text-align: center;">
-    <button type="button" class="btn btn-outline-secondary" asp-action="Index" asp-controller="Home">
+    <a type="button" class="btn btn-outline-secondary" asp-action="Index" asp-controller="Home">
         Go Back
-    </button>
+    </a>
     <button type="button" class="btn btn-primary" onclick="history.back();">
         Proceed to checkout
     </button>

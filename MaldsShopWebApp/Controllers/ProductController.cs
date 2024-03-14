@@ -178,10 +178,10 @@ namespace MaldsShopWebApp.Controllers
                 return View("Error");
             }
 
-            if (!string.IsNullOrEmpty(productDetails.ImageUrl))
-            {
-                var deletionResult = _photoService.DeletePhotoAsync(productDetails.ImageUrl);
-            }
+            //if (!string.IsNullOrEmpty(productDetails.ImageUrl))
+            //{
+            //    var deletionResult = _photoService.DeletePhotoAsync(productDetails.ImageUrl);
+            //}
 
             _productRepository.Delete(productDetails);
             return RedirectToAction("Index", "Home");

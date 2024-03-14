@@ -5,6 +5,7 @@ public class Review
     [Key]
     public int ReviewId { get; set; }
     public string AppUserId { get; set; }
+    public int ProductId { get; set; }
     public DateTime AddedTime { get; set; }
     public DateTime? EditedTime { get; set; }
     public string ReviewText { get; set; }

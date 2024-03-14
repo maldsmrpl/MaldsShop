@@ -38,7 +38,7 @@ namespace MaldsShopWebApp.Repository
         }
         public async Task<Product> GetByIdAsync(int id)
         {
-            return await _context.Products.AsNoTracking().FirstOrDefaultAsync(i => i.ProductId == id);
+            return await _context.Products.Include(r => r.Reviews).ThenInclude(a => a.AppUser).AsNoTracking().FirstOrDefaultAsync(i => i.ProductId == id);
         }
         public async Task<PaginatedResult<Product>> GetAllPaginatedAsync(int pageIndex, int pageSize, string sortBy = "Name")
         {

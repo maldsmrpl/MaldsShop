@@ -1,4 +1,5 @@
 ﻿@using MaldsShopWebApp.ViewModels
+@using MaldsShopWebApp.Interfaces
 @model DetailsProductViewModel
 
 @{
@@ -64,9 +65,13 @@
                 <button type="button" class="btn btn-outline-primary" onclick="history.back();">
                     Go Back
                 </button>
-                <button type="button" class="btn btn-outline-primary" onclick="history.back();">
-                    Add review
-                </button>
+                @if (isAuthenticated)
+                {
+                    <a asp-controller="Review" asp-action="Create" asp-route-id="@Model.ProductId" type="button" class="btn btn-primary">
+                        Add Review
+                    </a>
+
+                }
                 <button type="button" class="btn btn-outline-danger">
                     To cart
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart4" viewBox="0 0 16 16">
@@ -105,6 +110,16 @@
                             <p>@review.ReviewText</p>
                             <p>Score: @review.ReviewScore</p>
                             <p>Reviewed on: @review.AddedTime.ToString("g") @(review.EditedTime.HasValue ? $"(Edited: {review.EditedTime.Value.ToString("g")})" : "")</p>
+                            @if (isAuthenticated && User.Identity!.Name != null)
+                            { @if (@review.AppUser.Email == @User.Identity.Name)
+                                {
+                                    <a asp-controller="Review" asp-action="Edit" asp-route-id="@review.ReviewId" type="button" class="btn btn-outline-primary">
+                                        Edit
+                                    </a>
+                                    <a asp-controller="Review" asp-action="Delete" asp-route-id="@review.ReviewId" type="button" class="btn btn-outline-danger">
+                                        Delete
+                                    </a>
+                                } }
                         </div>
                     }
                 }

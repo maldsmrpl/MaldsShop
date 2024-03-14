@@ -253,7 +253,7 @@ namespace MaldsShopWebApp.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("OrderItem", b =>
@@ -279,7 +279,7 @@ namespace MaldsShopWebApp.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("Product", b =>
@@ -313,7 +313,7 @@ namespace MaldsShopWebApp.Migrations
 
                     b.HasKey("ProductId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Review", b =>
@@ -350,7 +350,7 @@ namespace MaldsShopWebApp.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("ShippingCart", b =>
@@ -370,7 +370,7 @@ namespace MaldsShopWebApp.Migrations
                     b.HasIndex("AppUserId")
                         .IsUnique();
 
-                    b.ToTable("ShippingCarts");
+                    b.ToTable("ShippingCarts", (string)null);
                 });
 
             modelBuilder.Entity("ShippingCartItem", b =>
@@ -396,7 +396,7 @@ namespace MaldsShopWebApp.Migrations
 
                     b.HasIndex("ShippingCartId");
 
-                    b.ToTable("ShippingCartItems");
+                    b.ToTable("ShippingCartItems", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

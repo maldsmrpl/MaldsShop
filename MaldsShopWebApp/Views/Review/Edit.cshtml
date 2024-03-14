@@ -1,0 +1,27 @@
+﻿@model MaldsShopWebApp.ViewModels.ReviewViewModel
+
+@{
+    ViewData["Title"] = "Edit review";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="@Model.ProductId" id="ProductId" />
+    <input type="hidden" asp-for="@Model.ReviewId" id="ReviewId" />
+    <div class="form-group">
+        <label asp-for="ReviewText"></label>
+        <textarea asp-for="ReviewText" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+        <label asp-for="ReviewScore" class="form-label mt-4">Review Score</label>
+        <select asp-for="ReviewScore" class="form-select" control-id="ControlID-13">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

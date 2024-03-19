@@ -46,7 +46,7 @@ namespace MaldsShopWebApp.Repository
             _context.Update(user);
             return Save();
         }
-        public bool IsAdmin(string userId)
+        public bool IsAdminById(string userId)
         {
             var adminRoleId = _context.Roles.FirstOrDefault(a => a.Name == UserRoles.Admin).Id;
             if (adminRoleId == null) return false;
@@ -60,7 +60,7 @@ namespace MaldsShopWebApp.Repository
                 return false;
             }
         }
-        public async Task<bool> IsAdminAsync(string userEmail)
+        public async Task<bool> IsAdminByIdAsync(string userEmail)
         {
             var adminRoleId = _context.Roles.FirstOrDefaultAsync(a => a.Name == UserRoles.Admin).Result.Id;
             if (adminRoleId == null)
@@ -85,12 +85,48 @@ namespace MaldsShopWebApp.Repository
                 return false;
             }
         }
+        public async Task<bool> IsAdminByEmailAsync(string userEmail)
+        {
+            var userId = await _context.Users
+                                       .Where(u => u.Email == userEmail)
+                                       .Select(u => u.Id)
+                                       .FirstOrDefaultAsync();
+
+            if (userId == null)
+            {
+                return false;
+            }
+
+            var adminRoleId = await _context.Roles
+                                            .Where(r => r.Name == UserRoles.Admin)
+                                            .Select(r => r.Id)
+                                            .FirstOrDefaultAsync();
+
+            if (adminRoleId == null)
+            {
+                return false;
+            }
+
+            var isAdmin = await _context.UserRoles
+                                         .AnyAsync(ur => ur.UserId == userId && ur.RoleId == adminRoleId);
+
+            return isAdmin;
+        }
         public async Task<AppUser> GetByEmail(string email)
         {
             var user = await _context.Users
                 .Include(s => s.ShippingCart)
                 .Include(c => c.ShippingCart.ShippingCartItems)
                 .ThenInclude(p => p.Product)
+                .FirstOrDefaultAsync(e => e.NormalizedEmail == email.ToUpper());
+
+            if (user == null) return new AppUser();
+
+            return user;
+        }
+        public async Task<AppUser> GetByEmailLazy(string email)
+        {
+            var user = await _context.Users
                 .FirstOrDefaultAsync(e => e.NormalizedEmail == email.ToUpper());
 
             if (user == null) return new AppUser();

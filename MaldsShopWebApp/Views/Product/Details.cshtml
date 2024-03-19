@@ -83,17 +83,27 @@
                 </div>
             </div>
 
+            @{
+                var totalReviews = 0;
+                var avarageScore = 0.0;
+                if (Model.Reviews.Count() > 0 && Model.Reviews != null)
+                {
+                    totalReviews = Model.Reviews.Count();
+                    avarageScore = Model.Reviews.Average(s => s.ReviewScore);
+                }
+            }
+
             <div class="row mb-2">
                 <label class="col-sm-4 col-form-label">Total reviews</label>
                 <div class="col-sm-8">
-                    <input type="text" readonly class="form-control-plaintext" value="Reviews">
+                    <input type="text" readonly class="form-control-plaintext" value="@totalReviews">
                 </div>
             </div>
 
             <div class="row mb-2">
                 <label class="col-sm-4 col-form-label">Avarage score</label>
                 <div class="col-sm-8">
-                    <input type="text" readonly class="form-control-plaintext" value="Score">
+                    <input type="text" readonly class="form-control-plaintext" value="@avarageScore.ToString("0.00")">
                 </div>
             </div>
 
@@ -118,7 +128,7 @@
             <br />
             <div>
                 @{
-                    if (isAuthenticated)
+                    if (isAuthenticated && Model.isAdmin)
                     {
                         <div>
                             <a asp-controller="Product" asp-action="Edit" asp-route-id="@Model.ProductId" type="button" class="btn btn-outline-primary">

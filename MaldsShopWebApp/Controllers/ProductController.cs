@@ -67,6 +67,7 @@ namespace MaldsShopWebApp.Controllers
             if (product == null) return RedirectToAction("Index");
             var detailsVM = new DetailsProductViewModel()
             {
+                isAdmin = await _userRepository.IsAdminByEmailAsync(User.Identity.Name),
                 ProductId = product.ProductId,
                 Title = product.Title,
                 Description = product.Description,

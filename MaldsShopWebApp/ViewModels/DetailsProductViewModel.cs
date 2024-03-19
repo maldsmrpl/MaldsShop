@@ -1,7 +1,11 @@
-﻿namespace MaldsShopWebApp.ViewModels
+﻿using MaldsShopWebApp.Interfaces;
+using Microsoft.AspNetCore.Identity;
+
+namespace MaldsShopWebApp.ViewModels
 {
     public class DetailsProductViewModel
     {
+        public bool isAdmin { get; set; }
         public int ProductId { get; set; }
         public string Title { get; set; }
         public string ImageUrl { get; set; }

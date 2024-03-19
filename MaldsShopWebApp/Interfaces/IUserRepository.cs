@@ -8,8 +8,9 @@
         bool Update(AppUser user);
         bool Delete(AppUser user);
         bool Save();
-        bool IsAdmin(string userId);
-        Task<bool> IsAdminAsync(string userId);
+        bool IsAdminById(string userId);
+        Task<bool> IsAdminByIdAsync(string userId);
         Task<AppUser> GetByEmail(string email);
+        Task<bool> IsAdminByEmailAsync(string userEmail);
     }
 }

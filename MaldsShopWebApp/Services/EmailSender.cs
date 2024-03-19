@@ -11,7 +11,7 @@ namespace MaldsShopWebApp.Services
         private readonly SmtpSettings _email;
         public EmailSender(IOptions<SmtpSettings> config)
         {
-            var _email = new SmtpSettings()
+            _email = new SmtpSettings()
             {
                 SmtpServer = config.Value.SmtpServer,
                 SmtpPort = config.Value.SmtpPort,

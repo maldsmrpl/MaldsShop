@@ -1,4 +1,5 @@
 ﻿using MaldsShopWebApp.Data;
+using MaldsShopWebApp.Helpers;
 using MaldsShopWebApp.Interfaces;
 using MaldsShopWebApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -129,7 +130,8 @@ namespace MaldsShopWebApp.Controllers
         {
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token, email = user.Email }, Request.Scheme);
-            await _emailSender.SendEmailAsync(user.Email, "MaldsShop - Confirm your email", $"<h3>Confirm your email:</h3> <br> {confirmationLink}");
+            var email = new MessageConfirmEmail();
+            await _emailSender.SendEmailAsync(user.Email, "MaldsShop account - Email confirmation", email.Body(confirmationLink));
         }
     }
 }

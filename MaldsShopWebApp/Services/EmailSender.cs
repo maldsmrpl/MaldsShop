@@ -1,20 +1,31 @@
 ﻿using MailKit.Net.Smtp;
 using MaldsShopWebApp.Helpers;
-using MaldsShopWebApp.Interfaces;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Options;
 using MimeKit;
 
 namespace MaldsShopWebApp.Services
 {
     public class EmailSender : IEmailSender
     {
+        private readonly SmtpSettings _email;
+        public EmailSender(IOptions<SmtpSettings> config)
+        {
+            var _email = new SmtpSettings()
+            {
+                SmtpServer = config.Value.SmtpServer,
+                SmtpPort = config.Value.SmtpPort,
+                SmtpUsername = config.Value.SmtpUsername,
+                SmtpPassword = config.Value.SmtpPassword
+            };
+        }
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("MaldsShop", "mail@malds.dev"));
+            message.From.Add(new MailboxAddress("MaldsShop", _email.SmtpUsername));
             message.To.Add(new MailboxAddress("", toEmail));
             message.Subject = subject;
-            message.Body = new TextPart("plain") 
+            message.Body = new TextPart("html") 
             { 
                 Text = body 
             };
@@ -23,8 +34,8 @@ namespace MaldsShopWebApp.Services
             {
                 try
                 {
-                    await client.ConnectAsync("malds.dev", 465, true);
-                    await client.AuthenticateAsync("mail@malds.dev", "MyMail-1803");
+                    await client.ConnectAsync(_email.SmtpServer, _email.SmtpPort, true);
+                    await client.AuthenticateAsync(_email.SmtpUsername, _email.SmtpPassword);
 
                     await client.SendAsync(message);
                     await client.DisconnectAsync(true);

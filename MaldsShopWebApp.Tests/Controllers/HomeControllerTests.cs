@@ -6,6 +6,7 @@ using MaldsShopWebApp.Interfaces;
 using MaldsShopWebApp.Models;
 using MaldsShopWebApp.ViewModels;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -25,6 +26,7 @@ namespace MaldsShopWebApp.Tests.Controllers
         private readonly IUserRepository _userRepository;
         private readonly CartCountSession _cartCountSession;
         private readonly HomeController _controller;
+        private readonly IEmailSender _emailSender;
 
         public HomeControllerTests()
         {
@@ -33,8 +35,16 @@ namespace MaldsShopWebApp.Tests.Controllers
             _shippingCartRepository = A.Fake<IShippingCartRepository>();
             _userRepository = A.Fake<IUserRepository>();
             _cartCountSession = A.Fake<CartCountSession>();
+            _emailSender = A.Fake<IEmailSender>();
 
-            _controller = new HomeController(_logger, _productRepository, _shippingCartRepository, _userRepository, _cartCountSession);
+            _controller = new HomeController(
+                _logger, 
+                _productRepository, 
+                _shippingCartRepository, 
+                _userRepository, 
+                _cartCountSession, 
+                _emailSender
+                );
         }
 
         [Fact]

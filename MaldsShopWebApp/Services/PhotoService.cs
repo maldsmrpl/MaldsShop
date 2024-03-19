@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using MaldsShopWebApp.Helpers;
 using MaldsShopWebApp.Interfaces;
 
-namespace RunGroopWebApp.Services
+namespace MaldsShopWebApp.Services
 {
     public class PhotoService : IPhotoService
     {

@@ -4,7 +4,7 @@ using MaldsShopWebApp.Interfaces;
 using MaldsShopWebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RunGroopWebApp.Services;
+using MaldsShopWebApp.Services;
 
 namespace MaldsShopWebApp.Controllers
 {

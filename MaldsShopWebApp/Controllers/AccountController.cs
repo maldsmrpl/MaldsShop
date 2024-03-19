@@ -1,7 +1,10 @@
 ﻿using MaldsShopWebApp.Data;
+using MaldsShopWebApp.Interfaces;
 using MaldsShopWebApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace MaldsShopWebApp.Controllers
 {
@@ -10,11 +13,14 @@ namespace MaldsShopWebApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ApplicationDbContext context)
+        private readonly IEmailSender _emailSender;
+
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ApplicationDbContext context, IEmailSender emailSender)
         {
             _context = context;
             _signInManager = signInManager;
             _userManager = userManager;
+            _emailSender = emailSender;
         }
         [HttpGet]
         public IActionResult Login()
@@ -35,12 +41,22 @@ namespace MaldsShopWebApp.Controllers
                 var passwordCheck = await _userManager.CheckPasswordAsync(user, loginViewModel.Password);
                 if (passwordCheck)
                 {
-                    //Password correct, sign in
-                    var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, true, false);
-                    if (result.Succeeded)
+                    //Password correct, is email confirmed
+                    if (user.EmailConfirmed != false)
                     {
-                        return RedirectToAction("Index", "Home");
+                        //Password correct, email confirmed, sign in
+                        var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, true, false);
+                        if (result.Succeeded)
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
                     }
+                    else
+                    {
+                        SendConfirmationEmailAsync(user);
+                        return RedirectToAction("SuccessRegistration", "Account");
+                    }
+                    
                 }
                 //Password is incorrect
                 TempData["Error"] = "Wrong credentials. Please try again";
@@ -76,10 +92,31 @@ namespace MaldsShopWebApp.Controllers
             };
             var newUserResponse = await _userManager.CreateAsync(newUser, registerViewModel.Password);
 
+            SendConfirmationEmailAsync(newUser);
+
             if (newUserResponse.Succeeded)
                 await _userManager.AddToRoleAsync(newUser, UserRoles.User);
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("SuccessRegistration", "Account");
+        }
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string token, string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return View("Error");
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            return View(result.Succeeded ? nameof(ConfirmEmail) : "Error");
+        }
+        [HttpGet]
+        public IActionResult SuccessRegistration()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult Error()
+        {
+            return View();
         }
 
         [HttpGet]
@@ -87,6 +124,12 @@ namespace MaldsShopWebApp.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+        public async void SendConfirmationEmailAsync(AppUser user)
+        {
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token, email = user.Email }, Request.Scheme);
+            await _emailSender.SendEmailAsync(user.Email, "MaldsShop - Confirm your email", $"<h3>Confirm your email:</h3> <br> {confirmationLink}");
         }
     }
 }

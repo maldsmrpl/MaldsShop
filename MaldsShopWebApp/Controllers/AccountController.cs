@@ -119,8 +119,67 @@ namespace MaldsShopWebApp.Controllers
         {
             return View();
         }
-
         [HttpGet]
+		[HttpGet]
+		public IActionResult ForgotPassword()
+		{
+			return View();
+		}
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel forgotPasswordVM)
+		{
+			if (!ModelState.IsValid)
+				return View(forgotPasswordVM);
+			var user = await _userManager.FindByEmailAsync(forgotPasswordVM.Email);
+			if (user == null)
+				return RedirectToAction(nameof(ForgotPasswordConfirmation));
+			var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+			var callback = Url.Action(nameof(ResetPassword), "Account", new { token, email = user.Email }, Request.Scheme);
+			var message = new EmailMessages();
+			await _emailSender.SendEmailAsync(user.Email, "MaldsShop - Password Reset Request", message.ResetPassword(callback));
+			return RedirectToAction(nameof(ForgotPasswordConfirmation));
+		}
+		public IActionResult ForgotPasswordConfirmation()
+		{
+			return View();
+		}
+		[HttpGet]
+		public IActionResult ResetPassword(string token, string email)
+		{
+			var model = new ResetPasswordViewModel { Token = token, Email = email };
+			return View(model);
+		}
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> ResetPassword(ResetPasswordViewModel resetPasswordVM)
+		{
+			if (!ModelState.IsValid)
+				return View(resetPasswordVM);
+
+			var user = await _userManager.FindByEmailAsync(resetPasswordVM.Email);
+			if (user == null)
+				RedirectToAction(nameof(ResetPasswordConfirmation));
+
+			var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordVM.Token, resetPasswordVM.Password);
+			if (!resetPassResult.Succeeded)
+			{
+				foreach (var error in resetPassResult.Errors)
+				{
+					ModelState.TryAddModelError(error.Code, error.Description);
+				}
+
+				return View();
+			}
+
+			return RedirectToAction(nameof(ResetPasswordConfirmation));
+		}
+		[HttpGet]
+		public IActionResult ResetPasswordConfirmation()
+		{
+			return View();
+		}
+		[HttpGet]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -130,8 +189,8 @@ namespace MaldsShopWebApp.Controllers
         {
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var confirmationLink = Url.Action(nameof(ConfirmEmail), "Account", new { token, email = user.Email }, Request.Scheme);
-            var email = new MessageConfirmEmail();
-            await _emailSender.SendEmailAsync(user.Email, "MaldsShop account - Email confirmation", email.Body(confirmationLink));
+            var message = new EmailMessages();
+            await _emailSender.SendEmailAsync(user.Email, "MaldsShop account - Email confirmation", message.ConfirmEmail(confirmationLink));
         }
     }
 }

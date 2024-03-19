@@ -86,10 +86,12 @@
             @{
                 var totalReviews = 0;
                 var avarageScore = 0.0;
+                var avaragePercent = 0;
                 if (Model.Reviews.Count() > 0 && Model.Reviews != null)
                 {
                     totalReviews = Model.Reviews.Count();
                     avarageScore = Model.Reviews.Average(s => s.ReviewScore);
+                    avaragePercent = (int)(avarageScore * 100) / 5;
                 }
             }
 
@@ -103,6 +105,9 @@
             <div class="row mb-2">
                 <label class="col-sm-4 col-form-label">Avarage score</label>
                 <div class="col-sm-8">
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: @avaragePercent%;" aria-valuenow="@avarageScore" aria-valuemin="0" aria-valuemax="5"></div>
+                    </div>
                     <input type="text" readonly class="form-control-plaintext" value="@avarageScore.ToString("0.00")">
                 </div>
             </div>

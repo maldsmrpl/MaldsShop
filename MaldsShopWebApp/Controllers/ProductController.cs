@@ -51,7 +51,7 @@ namespace MaldsShopWebApp.Controllers
                     InStock = productVM.InStock,
                     ImageUrl = result.Url.ToString()
                 };
-                _productRepository.Add(product);
+                _productRepository.AddAsync(product);
                 return RedirectToAction("Index", "Home");
             }
             else
@@ -165,7 +165,7 @@ namespace MaldsShopWebApp.Controllers
                 product.ImageUrl = editVM.ImageUrl;
             }
 
-            _productRepository.Update(product);
+            _productRepository.UpdateAsync(product);
 
             return RedirectToAction("Index", "Home");
         }
@@ -184,7 +184,7 @@ namespace MaldsShopWebApp.Controllers
             //    var deletionResult = _photoService.DeletePhotoAsync(productDetails.ImageUrl);
             //}
 
-            _productRepository.Delete(productDetails);
+            _productRepository.DeleteAsync(productDetails);
             return RedirectToAction("Index", "Home");
         }
     }

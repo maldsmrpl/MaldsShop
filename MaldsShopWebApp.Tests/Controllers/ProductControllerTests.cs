@@ -69,7 +69,7 @@ namespace MaldsShopWebApp.Tests.Controllers
             var productVM = A.Fake<CreateProductViewModel>();
             A.CallTo(() => _photoService.AddPhotoAsync(productVM.ImageUrl)).Returns(photoResult);
             var product = A.Fake<Product>();
-            A.CallTo(() => _productRepository.Add(product));
+            A.CallTo(() => _productRepository.AddAsync(product));
 
             //Act
             var result = _controller.Create(productVM);
@@ -107,7 +107,7 @@ namespace MaldsShopWebApp.Tests.Controllers
             var result = await _controller.Create(productVM);
 
             // Assert
-            A.CallTo(() => _productRepository.Add(A<Product>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _productRepository.AddAsync(A<Product>.Ignored)).MustHaveHappenedOnceExactly();
             result.Should().BeOfType<RedirectToActionResult>();
             var redirectResult = result as RedirectToActionResult;
             redirectResult.ActionName.Should().Be("Index");
@@ -209,7 +209,7 @@ namespace MaldsShopWebApp.Tests.Controllers
             var result = await _controller.Edit(id, editVM);
 
             // Assert
-            A.CallTo(() => _productRepository.Update(A<Product>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _productRepository.UpdateAsync(A<Product>.Ignored)).MustHaveHappenedOnceExactly();
             result.Should().BeOfType<RedirectToActionResult>();
         }
         [Fact]
@@ -241,7 +241,7 @@ namespace MaldsShopWebApp.Tests.Controllers
             var result = await _controller.DeleteProduct(id);
 
             // Assert
-            A.CallTo(() => _productRepository.Delete(A<Product>.Ignored)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => _productRepository.DeleteAsync(A<Product>.Ignored)).MustHaveHappenedOnceExactly();
             result.Should().BeOfType<RedirectToActionResult>();
         }
     }

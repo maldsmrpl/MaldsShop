@@ -12,24 +12,24 @@ namespace MaldsShopWebApp.Repository
         {
             _context = context;
         }
-        public bool Add(Product product)
+        public async Task<bool> AddAsync(Product product)
         {
-            _context.Products.Add(product);
-            return Save();
+            await _context.Products.AddAsync(product);
+            return await SaveAsync();
         }
-        public bool Update(Product product)
+        public async Task<bool> UpdateAsync(Product product)
         {
             _context.Products.Update(product);
-            return Save();
+            return await SaveAsync();
         }
-        public bool Delete(Product product)
+        public async Task<bool> DeleteAsync(Product product)
         {
             _context.Products.Remove(product);
-            return Save();
+            return await SaveAsync();
         }
-        public bool Save()
+        public async Task<bool> SaveAsync()
         {
-            var saved = _context.SaveChanges();
+            var saved = await _context.SaveChangesAsync();
             return saved > 0 ? true : false;
         }
         public async Task<IEnumerable<Product>> GetAllAsync()
@@ -75,9 +75,22 @@ namespace MaldsShopWebApp.Repository
                 TotalCount = totalCount
             };
         }
-        public void AttachProduct(Product product)
+        public async Task<bool> ProductSoldAsync(Product product, int itemsSold)
         {
-            _context.Products.Attach(product);
+            if (!await IsEnoughStock(product, itemsSold))
+            {
+                return false;
+            }
+            product.InStock -= itemsSold;
+            return await UpdateAsync(product);
+        }
+        public async Task<bool> IsEnoughStock(Product product, int itemsRequired)
+        {
+            if (product == null || product.InStock < itemsRequired)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

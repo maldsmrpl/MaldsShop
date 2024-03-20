@@ -57,7 +57,7 @@ namespace MaldsShopWebApp.Controllers
                     PriceData = new SessionLineItemPriceDataOptions
                     {
                         UnitAmount = (long)item.Product.Price,
-                        Currency = "pln",
+                        Currency = "usd",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
                             Name = item.Product.Title,

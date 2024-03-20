@@ -28,7 +28,6 @@ namespace MaldsShopWebApp.Controllers
 
             try
             {
-                var webHookSecret = "";
                 var stripeEvent = EventUtility.ConstructEvent(
                     json,
                     Request.Headers["Stripe-Signature"],

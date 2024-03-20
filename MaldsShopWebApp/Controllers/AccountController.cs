@@ -15,14 +15,16 @@ namespace MaldsShopWebApp.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly IEmailSender _emailSender;
+		private readonly IUserRepository _userRepository;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ApplicationDbContext context, IEmailSender emailSender)
+		public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ApplicationDbContext context, IEmailSender emailSender, IUserRepository userRepository)
         {
             _context = context;
             _signInManager = signInManager;
             _userManager = userManager;
             _emailSender = emailSender;
-        }
+			_userRepository = userRepository;
+		}
         [HttpGet]
         public IActionResult Login()
 		{
@@ -49,6 +51,7 @@ namespace MaldsShopWebApp.Controllers
                         var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, true, false);
                         if (result.Succeeded)
                         {
+                            await _userRepository.UpdateLastActivity(user.Email);
                             return RedirectToAction("Index", "Home");
                         }
                     }

@@ -124,7 +124,7 @@ namespace MaldsShopWebApp.Repository
 
             return user;
         }
-        public async Task<AppUser> GetByEmailLazy(string email)
+        public async Task<AppUser> GetByEmailLazyAsync(string email)
         {
             var user = await _context.Users
                 .FirstOrDefaultAsync(e => e.NormalizedEmail == email.ToUpper());
@@ -132,6 +132,12 @@ namespace MaldsShopWebApp.Repository
             if (user == null) return new AppUser();
 
             return user;
+        }
+        public async Task<bool> UpdateLastActivity(string email)
+        {
+            var user = await GetByEmailLazyAsync(email);
+            user.LastActivityTime = DateTime.UtcNow;
+            return Update(user);
         }
     }
 }

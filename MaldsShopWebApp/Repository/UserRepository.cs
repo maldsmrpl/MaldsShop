@@ -116,7 +116,7 @@ namespace MaldsShopWebApp.Repository
         {
             var user = await _context.Users
                 .Include(s => s.ShippingCart)
-                .Include(c => c.ShippingCart.ShippingCartItems)
+                .ThenInclude(i => i.ShippingCartItems)
                 .ThenInclude(p => p.Product)
                 .FirstOrDefaultAsync(e => e.NormalizedEmail == email.ToUpper());
 
@@ -133,7 +133,7 @@ namespace MaldsShopWebApp.Repository
 
             return user;
         }
-        public async Task<bool> UpdateLastActivity(string email)
+        public async Task<bool> UpdateLastActivityAsync(string email)
         {
             var user = await GetByEmailLazyAsync(email);
             user.LastActivityTime = DateTime.UtcNow;

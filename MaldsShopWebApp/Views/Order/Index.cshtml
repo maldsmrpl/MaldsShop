@@ -35,11 +35,14 @@
     <a type="button" class="btn btn-outline-secondary" asp-action="Index" asp-controller="ShoppingCart">
         Go Back
     </a>
-    <form asp-controller="Order" asp-action="Checkout" method="post">
-        <input type="hidden" asp-for="@Model.ShippingCart" id="ShippingCart" name="ShippingCart" />
-        <input type="hidden" asp-for="@Model.UserEmail" id="UserEmail" name="UserEmail" />
-        <button type="submit" class="btn btn-outline-primary">
-            Proceed with payment
-        </button>
-    </form>
+    @if(Model.IsEnoughStock)
+    {
+        <form asp-controller="Order" asp-action="Checkout" method="post">
+            <input type="hidden" asp-for="@Model.ShippingCart" id="ShippingCart" name="ShippingCart" />
+            <input type="hidden" asp-for="@Model.UserEmail" id="UserEmail" name="UserEmail" />
+            <button type="submit" class="btn btn-outline-primary">
+                Proceed with payment
+            </button>
+        </form>
+    }
 </div>

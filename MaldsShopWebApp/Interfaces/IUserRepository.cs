@@ -12,7 +12,7 @@
         Task<bool> IsAdminByIdAsync(string userId);
         Task<AppUser> GetByEmailAsync(string email);
         Task<bool> IsAdminByEmailAsync(string userEmail);
-        Task<bool> UpdateLastActivity(string email);
+        Task<bool> UpdateLastActivityAsync(string email);
 
 	}
 }

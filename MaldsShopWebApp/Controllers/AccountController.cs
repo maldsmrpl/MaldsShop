@@ -51,7 +51,7 @@ namespace MaldsShopWebApp.Controllers
                         var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, true, false);
                         if (result.Succeeded)
                         {
-                            await _userRepository.UpdateLastActivity(user.Email);
+                            await _userRepository.UpdateLastActivityAsync(user.Email);
                             return RedirectToAction("Index", "Home");
                         }
                     }
@@ -92,7 +92,7 @@ namespace MaldsShopWebApp.Controllers
             {
                 Email = registerViewModel.EmailAddress,
                 UserName = registerViewModel.EmailAddress,
-                AddedTime = DateTime.UtcNow
+                AddedTime = DateTime.UtcNow,
             };
             var newUserResponse = await _userManager.CreateAsync(newUser, registerViewModel.Password);
 

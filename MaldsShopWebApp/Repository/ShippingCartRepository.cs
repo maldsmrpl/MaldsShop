@@ -74,6 +74,15 @@ namespace MaldsShopWebApp.Repository
                 throw;
             }
         }
-
+        public async Task<bool> UpdateAsync(ShippingCart shippingCart)
+        {
+            _context.ShippingCarts.Update(shippingCart);
+            return await SaveAsync();
+        }
+        public async Task<bool> ClearShippingCart(ShippingCart shippingCart)
+        {
+            shippingCart.ShippingCartItems.Clear();
+            return await UpdateAsync(shippingCart);
+        }
     }
 }

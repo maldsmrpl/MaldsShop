@@ -8,6 +8,7 @@ public class Order
     public virtual AppUser AppUser { get; set; }
     public DateTime PurchasedTime { get; set; }
     public bool IsPaid { get; set; } = false;
-    public string StripeInvoiceNumber { get; set; }
+    public string? StripeInvoiceId { get; set; }
+    public string StripeSessionId { get; set; }
     public virtual ICollection<OrderItem> OrderItems { get; set; }
 }

@@ -88,5 +88,11 @@ namespace MaldsShopWebApp.Repository
                 .Any(oi => oi.ProductId == productId))
                 .ToListAsync();
         }
+        public async Task<Order> FindByStripeSessionIdAsync(string sessionId)
+        {
+            return await _context.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.StripeSessionId == sessionId);
+        }
     }
 }

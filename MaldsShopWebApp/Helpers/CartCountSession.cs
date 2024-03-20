@@ -14,11 +14,11 @@ namespace MaldsShopWebApp.Helpers
         {
             var user = await _userRepository.GetByEmailAsync(userEmail);
             var cartItems = user.ShippingCart.ShippingCartItems;
-            var itemsInTheCart = 0;
-            foreach (var item in cartItems)
-            {
-                itemsInTheCart = itemsInTheCart + item.Quantity;
-            }
+            var itemsInTheCart = cartItems.Count();
+            //foreach (var item in cartItems)
+            //{
+            //    itemsInTheCart = itemsInTheCart + item.Quantity;
+            //}
 
             httpContext.Session.SetInt32("CartCount", itemsInTheCart);
         }

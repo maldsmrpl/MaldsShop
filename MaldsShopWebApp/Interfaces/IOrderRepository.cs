@@ -13,5 +13,6 @@
         public Task<IEnumerable<Order>> GetOrdersByUserEmailAsync(string email);
         public Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId);
         public Task<IEnumerable<Order>> GetOrdersByProductIdAsync(int productId);
+        public Task<Order> FindByStripeSessionIdAsync(string sessionId);
     }
 }

@@ -10,9 +10,4 @@ public class AppUser : IdentityUser
     public virtual ShippingCart ShippingCart { get; set; } = new ShippingCart();
     public virtual ICollection<Order>? Orders { get; set; }
     public virtual ICollection<Review>? Reviews { get; set; }
-    public AppUser()
-    {
-        Orders = new HashSet<Order>();
-        Reviews = new HashSet<Review>();
-    }
 }

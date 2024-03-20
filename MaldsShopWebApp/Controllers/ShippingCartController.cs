@@ -33,7 +33,7 @@ namespace MaldsShopWebApp.Controllers
         public async Task<IActionResult> Index()
         {
             var userEmail = User.Identity.Name;
-            var user = await _userRepository.GetByEmail(userEmail);
+            var user = await _userRepository.GetByEmailAsync(userEmail);
             var shippingCartVM = new ShippingCartViewModel()
             {
                 ShippingCart = user.ShippingCart,
@@ -56,7 +56,7 @@ namespace MaldsShopWebApp.Controllers
         public async Task<IActionResult> AddToCart(int productId, bool isRedirected)
         {
             var userEmail = User.Identity.Name;
-            var user = await _userRepository.GetByEmail(userEmail);
+            var user = await _userRepository.GetByEmailAsync(userEmail);
             var product = await _productRepository.GetByIdAsync(productId);
 
             if (user != null && product != null)
@@ -91,7 +91,7 @@ namespace MaldsShopWebApp.Controllers
 
                 await _shippingCartRepository.SaveAsync();
 
-                var updatedUser = await _userRepository.GetByEmail(userEmail);
+                var updatedUser = await _userRepository.GetByEmailAsync(userEmail);
 
                 var cartVM = new ShippingCartViewModel
                 {
@@ -117,7 +117,7 @@ namespace MaldsShopWebApp.Controllers
         public async Task<IActionResult> RemoveFromCart(int productId, bool isRedirected)
         {
             var userEmail = User.Identity.Name;
-            var user = await _userRepository.GetByEmail(userEmail);
+            var user = await _userRepository.GetByEmailAsync(userEmail);
             var product = await _productRepository.GetByIdAsync(productId);
 
             if (user != null && product != null)
@@ -135,7 +135,7 @@ namespace MaldsShopWebApp.Controllers
 
                     await _shippingCartRepository.SaveAsync();
 
-                    var updatedUser = await _userRepository.GetByEmail(userEmail);
+                    var updatedUser = await _userRepository.GetByEmailAsync(userEmail);
                     var cartVM = new ShippingCartViewModel
                     {
                         UserEmail = userEmail,

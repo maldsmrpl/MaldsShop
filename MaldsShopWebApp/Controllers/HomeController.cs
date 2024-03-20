@@ -41,7 +41,7 @@ namespace MaldsShopWebApp.Controllers
             if (User?.Identity?.IsAuthenticated == true)
             {
                 
-                var user = await _userRepository.GetByEmail(User.Identity.Name);
+                var user = await _userRepository.GetByEmailAsync(User.Identity.Name);
 
                 var viewModel = new IndexProductViewModel
                 {

@@ -56,7 +56,7 @@ namespace MaldsShopWebApp.Controllers
             {
                 var review = new Review
                 {
-                    AppUserId = ( await _userRepository.GetByEmail(User.Identity.Name)).Id,
+                    AppUserId = ( await _userRepository.GetByEmailAsync(User.Identity.Name)).Id,
                     ProductId = reviewViewModel.ProductId,
                     ReviewText = reviewViewModel.ReviewText,
                     ReviewScore = reviewViewModel.ReviewScore,

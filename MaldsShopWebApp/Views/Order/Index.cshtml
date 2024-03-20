@@ -1,0 +1,45 @@
+﻿@model OrderViewModel
+
+<h3>Your order:</h3>
+<br />
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Title</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Price</th>
+            <th scope="col">Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int i = 1;
+            decimal totalPrice = 0;
+        }
+        @foreach (var item in Model.ShippingCart.ShippingCartItems)
+        {
+            <tr>
+                <th scope="row">@i</th>
+                <td><a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId">@item.Product.Title</a></td>
+                <td>@item.Quantity</td>
+                <td>@Math.Floor((decimal)item.Product.Price / 100).<small>@(string.Format("{0:00}", item.Product.Price % 100))</small> UAH</td>
+                <td>@Math.Floor((decimal)(item.Product.Price * item.Quantity) / 100).<small>@(string.Format("{0:00}", (item.Product.Price * item.Quantity) % 100))</small> UAH</td>
+            </tr>
+            totalPrice += item.Product.Price * item.Quantity;
+            i++;
+        }
+    </tbody>
+</table>
+<div style="text-align: center;">
+    <a type="button" class="btn btn-outline-secondary" asp-action="Index" asp-controller="ShoppingCart">
+        Go Back
+    </a>
+    <form asp-controller="Order" asp-action="Checkout" method="post">
+        <input type="hidden" asp-for="@Model.ShippingCart" id="ShippingCart" name="ShippingCart" />
+        <input type="hidden" asp-for="@Model.UserEmail" id="UserEmail" name="UserEmail" />
+        <button type="submit" class="btn btn-outline-primary">
+            Proceed with payment
+        </button>
+    </form>
+</div>

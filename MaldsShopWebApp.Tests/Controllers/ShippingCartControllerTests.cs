@@ -50,7 +50,7 @@ namespace MaldsShopWebApp.Tests.Controllers
             // Arrange
             var fakeUser = new AppUser { Email = "user@example.com", Id = "userId", ShippingCart = new ShippingCart() };
             var fakeProduct = new Product { ProductId = 1 };
-            A.CallTo(() => _userRepository.GetByEmail("user@example.com")).Returns(Task.FromResult(fakeUser));
+            A.CallTo(() => _userRepository.GetByEmailAsync("user@example.com")).Returns(Task.FromResult(fakeUser));
             A.CallTo(() => _productRepository.GetByIdAsync(1)).Returns(Task.FromResult(fakeProduct));
 
             // Act
@@ -72,7 +72,7 @@ namespace MaldsShopWebApp.Tests.Controllers
             var fakeCartItem = new ShippingCartItem { ProductId = productId, Quantity = 1, ShippingCartId = fakeUser.ShippingCart.ShippingCartId };
             fakeUser.ShippingCart.ShippingCartItems.Add(fakeCartItem);
 
-            A.CallTo(() => _userRepository.GetByEmail("user@example.com")).Returns(Task.FromResult(fakeUser));
+            A.CallTo(() => _userRepository.GetByEmailAsync("user@example.com")).Returns(Task.FromResult(fakeUser));
             A.CallTo(() => _productRepository.GetByIdAsync(productId)).Returns(Task.FromResult(fakeProduct));
             A.CallTo(() => _shippingCartRepository.GetShippingCartByUserEmail("user@example.com")).Returns(Task.FromResult(fakeUser.ShippingCart));
 

@@ -112,7 +112,7 @@ namespace MaldsShopWebApp.Repository
 
             return isAdmin;
         }
-        public async Task<AppUser> GetByEmail(string email)
+        public async Task<AppUser> GetByEmailAsync(string email)
         {
             var user = await _context.Users
                 .Include(s => s.ShippingCart)

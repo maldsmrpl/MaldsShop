@@ -19,6 +19,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="SendGrid" Version="9.29.2" />
+    <PackageReference Include="Stripe.net" Version="43.19.0" />
   </ItemGroup>
 
   <ItemGroup>

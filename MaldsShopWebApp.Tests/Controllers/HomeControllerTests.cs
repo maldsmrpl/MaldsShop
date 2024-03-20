@@ -126,7 +126,7 @@ namespace MaldsShopWebApp.Tests.Controllers
 
             A.CallTo(() => _productRepository.GetAllPaginatedAsync(A<int>.Ignored, A<int>.Ignored, A<string>.Ignored))
                 .Returns(Task.FromResult(paginatedResult));
-            A.CallTo(() => _userRepository.GetByEmail("test@example.com")).Returns(Task.FromResult(user));
+            A.CallTo(() => _userRepository.GetByEmailAsync("test@example.com")).Returns(Task.FromResult(user));
 
             var claims = new List<Claim> { new Claim(ClaimTypes.Name, "test@example.com"), };
             var identity = new ClaimsIdentity(claims, "TestAuthType");

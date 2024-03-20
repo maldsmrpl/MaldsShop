@@ -12,7 +12,7 @@ namespace MaldsShopWebApp.Helpers
         }
         public async void UpdateCount(string userEmail, HttpContext httpContext)
         {
-            var user = await _userRepository.GetByEmail(userEmail);
+            var user = await _userRepository.GetByEmailAsync(userEmail);
             var cartItems = user.ShippingCart.ShippingCartItems;
             var itemsInTheCart = 0;
             foreach (var item in cartItems)

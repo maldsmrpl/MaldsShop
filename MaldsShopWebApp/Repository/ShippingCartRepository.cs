@@ -15,7 +15,7 @@ namespace MaldsShopWebApp.Repository
         }
         public async Task<ShippingCart>? GetShippingCartByUserEmail(string userEmail)
         {
-            var user = await _userRepository.GetByEmail(userEmail);
+            var user = await _userRepository.GetByEmailAsync(userEmail);
             return await _context.ShippingCarts
                 .Include(i => i.ShippingCartItems)
                 .ThenInclude(p => p.Product)
@@ -24,7 +24,7 @@ namespace MaldsShopWebApp.Repository
         public async Task<bool> AddToShippingCart(ShippingCartItem item, string userEmail)
         {
             var shippingCart = await GetShippingCartByUserEmail(userEmail);
-            var currentUser = await _userRepository.GetByEmail(userEmail);
+            var currentUser = await _userRepository.GetByEmailAsync(userEmail);
 
             if (shippingCart == null)
             {

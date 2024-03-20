@@ -10,7 +10,7 @@
         bool Save();
         bool IsAdminById(string userId);
         Task<bool> IsAdminByIdAsync(string userId);
-        Task<AppUser> GetByEmail(string email);
+        Task<AppUser> GetByEmailAsync(string email);
         Task<bool> IsAdminByEmailAsync(string userEmail);
         Task<bool> UpdateLastActivity(string email);
 

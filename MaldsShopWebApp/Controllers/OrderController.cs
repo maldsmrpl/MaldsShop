@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
+using Stripe.Issuing;
 
 namespace MaldsShopWebApp.Controllers
 {
@@ -45,8 +46,8 @@ namespace MaldsShopWebApp.Controllers
                 },
                 LineItems = new List<SessionLineItemOptions> { },
                 Mode = "payment",
-                SuccessUrl = "https://localhost:7165/order/success",
-                CancelUrl = "https://localhost:7165/order/cancel",
+                SuccessUrl = Url.Action("Success", "Order", null, Request.Scheme),
+                CancelUrl = Url.Action("Cancel", "Order", null, Request.Scheme),
                 CustomerEmail = orderVM.UserEmail,
             };
 

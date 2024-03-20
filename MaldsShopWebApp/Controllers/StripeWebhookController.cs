@@ -14,11 +14,15 @@ namespace MaldsShopWebApp.Controllers
     {
         private readonly StripeSettings _stripeSettings;
         private readonly IUserRepository _userRepository;
+        private readonly IProductRepository _productRepository;
+        private readonly IOrderRepository _orderRepository;
 
-        public StripeWebhookController(IOptions<StripeSettings> stripeSettings, IUserRepository userRepository)
+        public StripeWebhookController(IOptions<StripeSettings> stripeSettings, IUserRepository userRepository, IProductRepository productRepository, IOrderRepository orderRepository)
         {
             _stripeSettings = stripeSettings.Value;
             _userRepository = userRepository;
+            _productRepository = productRepository;
+            _orderRepository = orderRepository;
         }
 
         [HttpPost("listen")]

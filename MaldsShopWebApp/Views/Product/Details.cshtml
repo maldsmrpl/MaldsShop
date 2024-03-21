@@ -76,8 +76,8 @@
                 <label class="col-sm-4 col-form-label">Price</label>
                 <div class="col-sm-8">
                     @{
-                        double price = Model.Price / 100;
-                        string priceText = price.ToString("0.00") + " UAH";
+                        double price = Model.Price / 100.0;
+                        string priceText = price.ToString("F2") + " UAH";
                     }
                     <input type="text" readonly class="form-control-plaintext" value="@priceText">
                 </div>

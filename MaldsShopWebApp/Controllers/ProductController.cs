@@ -49,7 +49,7 @@ namespace MaldsShopWebApp.Controllers
                     Description = productVM.Description,
                     Price = productVM.Price,
                     InStock = productVM.InStock,
-                    ImageUrl = result.Url.ToString(),
+                    ImageUrl = result.SecureUrl.ToString(),
                     ItemsSold = 0
                 };
                 _productRepository.AddAsync(product);

@@ -75,7 +75,8 @@ namespace MaldsShopWebApp.Controllers
                 Price = product.Price,
                 InStock = product.InStock,
                 ImageUrl = product.ImageUrl,
-                Reviews = product.Reviews
+                Reviews = product.Reviews,
+                ItemsSold= product.ItemsSold
             };
 
             if (product != null)

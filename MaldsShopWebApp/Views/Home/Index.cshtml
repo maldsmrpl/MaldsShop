@@ -66,7 +66,8 @@
                         <h3 class="text-danger">
                             @Math.Floor((decimal)product.Price / 100).<small>@(string.Format("{0:00}", product.Price % 100))</small> UAH
                         </h3>
-                        <p class="card-text">@{
+                        <p class="card-text">
+                            @{
                                 var totalReviews = 0;
                                 var avarageScore = 0.0;
                                 if (product.Reviews.Count() > 0 && product.Reviews != null)
@@ -77,10 +78,12 @@
                                 string productReview = $"Avarage score: {avarageScore.ToString("0.00")} (Total reviews: {totalReviews.ToString()})";
                             }
                             @productReview
-                            </p>
+                        </p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-body-secondary">Items sold: @product.ItemsSold pcs</small>
-                            <small class="text-body-secondary">In stock: @product.InStock pcs</small>
+                            <div style="display: flex; flex-direction: column; justify-content: center;">
+                                <small class="text-body-secondary">Items sold: @product.ItemsSold pcs</small>
+                                <small class="text-body-secondary">In stock: @product.InStock pcs</small>
+                            </div>
                             <div class="btn-group">
                                 @{
                                     var isInTheCart = Model.ShippingCart.ShippingCartItems.Any(p => p.ProductId == product.ProductId);

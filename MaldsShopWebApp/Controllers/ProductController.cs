@@ -49,7 +49,8 @@ namespace MaldsShopWebApp.Controllers
                     Description = productVM.Description,
                     Price = productVM.Price,
                     InStock = productVM.InStock,
-                    ImageUrl = result.Url.ToString()
+                    ImageUrl = result.Url.ToString(),
+                    ItemsSold = 0
                 };
                 _productRepository.AddAsync(product);
                 return RedirectToAction("Index", "Home");

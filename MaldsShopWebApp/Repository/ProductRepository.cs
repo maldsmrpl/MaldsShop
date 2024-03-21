@@ -82,6 +82,7 @@ namespace MaldsShopWebApp.Repository
                 return false;
             }
             product.InStock -= itemsSold;
+            product.ItemsSold += itemsSold;
             return await UpdateAsync(product);
         }
         public async Task<bool> IsEnoughStock(Product product, int itemsRequired)

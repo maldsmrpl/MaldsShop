@@ -64,7 +64,7 @@
     <a type="button" class="btn btn-outline-secondary" asp-action="Index" asp-controller="Home">
         Go Back
     </a>
-    <form asp-controller="Order" asp-action="Index" method="post">
+    <form asp-controller="Order" asp-action="Confirmation" method="post">
         <input type="hidden" asp-for="@Model.UserEmail" id="UserEmail" name="UserEmail" />
     <button type="submit" class="btn btn-primary">
         Proceed to checkout

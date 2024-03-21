@@ -1,0 +1,82 @@
+﻿@model OrderDetailsViewModel
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<h3>@ViewData["Title"]</h3>
+
+@if(Model.IsUserVerified)
+{
+    <br />
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <label>Order ID:</label>
+            </div>
+            <div class="col-md-6">
+                @Model.Order.OrderId
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <label>Purchased Time:</label>
+            </div>
+            <div class="col-md-6">
+                @Model.Order.PurchasedTime.ToString("g")
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <label>Status:</label>
+            </div>
+            <div class="col-md-6">
+                @(Model.Order.IsPaid ? "Paid" : "Not Paid")
+            </div>
+        </div>
+    </div>
+    <br />
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Title</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Price</th>
+                <th scope="col">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int i = 1;
+                decimal totalPrice = 0;
+            }
+            @foreach (var item in Model.Order.OrderItems)
+            {
+                <tr>
+                    <th scope="row">@i</th>
+                    <td><a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId">@item.Product.Title</a></td>
+                    <td>@item.Quantity</td>
+                    <td>@Math.Floor((decimal)item.Product.Price / 100).<small>@(string.Format("{0:00}", item.Product.Price % 100))</small> UAH</td>
+                    <td>@Math.Floor((decimal)(item.Product.Price * item.Quantity) / 100).<small>@(string.Format("{0:00}", (item.Product.Price * item.Quantity) % 100))</small> UAH</td>
+                </tr>
+                totalPrice += item.Product.Price * item.Quantity;
+                i++;
+            }
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-center align-items-center">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+            Home
+        </a>
+        <a asp-controller="User" asp-action="Orders" class="btn btn-outline-secondary">
+            My Orders
+        </a>
+        @if(!Model.Order.IsPaid)
+        {
+            <a asp-controller="Order" asp-action="Checkout" class="btn btn-primary">
+                Proceed to payment
+            </a>
+        }
+    </div>
+}

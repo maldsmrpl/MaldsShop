@@ -17,16 +17,50 @@ namespace MaldsShopWebApp.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IProductRepository _productRepository;
         private readonly IOrderRepository _orderRepository;
+        private readonly IShippingCartRepository _shippingCartRepository;
 
-        public OrderController(IOptions<StripeSettings> stripeSettings, IUserRepository userRepository, IProductRepository productRepository, IOrderRepository orderRepository)
+        public OrderController(
+            IOptions<StripeSettings> stripeSettings, 
+            IUserRepository userRepository, 
+            IProductRepository productRepository, 
+            IOrderRepository orderRepository,
+            IShippingCartRepository shippingCartRepository
+            )
         {
             _stripeSettings = stripeSettings.Value;
             _userRepository = userRepository;
             _productRepository = productRepository;
             _orderRepository = orderRepository;
+            _shippingCartRepository = shippingCartRepository;
+        }
+        public async Task<IActionResult> Details(int id)
+        {
+            var orderDetailsVM = new OrderDetailsViewModel();
+            var email = User?.Identity?.Name;
+            if (email != null)
+            {
+                var user = await _userRepository.GetByEmailAsync(email);
+                if (user != null)
+                {
+                    var order = await _orderRepository.GetOrderByIdAsync(id);
+                    if (order != null)
+                    {
+                        if (user.Id == order.AppUserId)
+                        {
+                            orderDetailsVM.IsUserVerified = true;
+                            orderDetailsVM.Order = order;
+                        }
+                        else
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
+                    }
+                }
+            }
+            return View(orderDetailsVM);
         }
         [Authorize]
-        public async Task<IActionResult> Index(OrderViewModel orderVM)
+        public async Task<IActionResult> Confirmation(OrderViewModel orderVM)
         {
             var user = await _userRepository.GetByEmailAsync(orderVM.UserEmail);
             orderVM.AppUser = user;
@@ -70,7 +104,7 @@ namespace MaldsShopWebApp.Controllers
                     PriceData = new SessionLineItemPriceDataOptions
                     {
                         UnitAmount = (long)item.Product.Price,
-                        Currency = "usd",
+                        Currency = "uah",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
                             Name = item.Product.Title,
@@ -112,15 +146,23 @@ namespace MaldsShopWebApp.Controllers
 
             return Redirect(session.Url);
         }
-        public IActionResult Success()
+        public async Task<IActionResult> Success()
         {
+            var cart = await _shippingCartRepository.GetShippingCartByUserEmail(User.Identity.Name);
+            if (cart != null)
+            {
+                int itemsInTheCart = 0;
+                foreach (var item in cart.ShippingCartItems)
+                {
+                    itemsInTheCart += item.Quantity;
+                }
+
+                HttpContext.Session.SetInt32("CartCount", itemsInTheCart);
+            }
+            
             return View();
         }
         public IActionResult Cancel()
-        {
-            return View();
-        }
-        public IActionResult PaymentConfirmed()
         {
             return View();
         }

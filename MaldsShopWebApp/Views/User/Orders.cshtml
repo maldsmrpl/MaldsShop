@@ -1,0 +1,37 @@
+﻿@model UserOrdersViewModel
+
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<h3>@ViewData["Title"]</h3>
+<br />
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Order No.</th>
+            <th scope="col">Items</th>
+            <th scope="col">Total price</th>
+            <th scope="col">Time</th>
+            <th scope="col">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var order in Model.Orders)
+        {
+
+            <tr class="@(order.IsPaid ? "table-success" : "table-danger")">
+                <th scope="row">
+                    <a asp-controller="Order" asp-action="Details" asp-route-id="@order.OrderId">
+                        @order.OrderId
+                    </a>
+                </th>
+                <td>@order.OrderItems.Sum(q => q.Quantity)</td>
+                <td>@((order.OrderItems.Sum(p => p.Product.Price) / 100.0).ToString("F2") + " UAH")</td>
+                <td>@order.PurchasedTime.ToString("g")</td>
+                <td>@(order.IsPaid ? "Paid" : "Not Paid")</td>
+            </tr>
+        }
+    </tbody>
+</table>

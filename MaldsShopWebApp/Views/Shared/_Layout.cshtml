@@ -69,7 +69,10 @@
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">@User.Identity.Name</a>
                                     <div class="dropdown-menu">
-                                        <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index">My Account</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="Index">My Dashboard</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="ShippingCart" asp-action="Index">My Shopping Cart</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="Orders">My Orders</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="Reviews">My Reviews</a>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
                                     </div>

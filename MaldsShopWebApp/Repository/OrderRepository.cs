@@ -70,6 +70,7 @@ namespace MaldsShopWebApp.Repository
                 .Include(i => i.OrderItems)
                 .ThenInclude(p => p.Product)
                 .Where(e => e.AppUser.Email == email)
+                .OrderByDescending(o => o.PurchasedTime)
                 .ToListAsync();
         }
         public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId)

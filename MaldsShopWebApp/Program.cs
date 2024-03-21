@@ -21,6 +21,7 @@ builder.Services.AddSession(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddProgressiveWebApp();
 
 builder.Services.AddScoped<CartCountSession>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -54,6 +55,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+
 
 var app = builder.Build();
 

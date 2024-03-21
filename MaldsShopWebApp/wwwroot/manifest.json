@@ -1,0 +1,31 @@
+{
+  "name": "MaldsShop",
+  "short_name": "MaldsShop Web App",
+  "description": "MaldsShop - Open sourse e-commerce web app project",
+  "icons": [
+    {
+      "src": "img/png_shop_100.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "img/png_shop_100.png",
+      "sizes": "168x168",
+      "type": "image/png"
+    },
+    {
+      "src": "img/png_shop_100.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "img/png_shop_100.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#F8F9FA",
+  "start_url": "/"
+}

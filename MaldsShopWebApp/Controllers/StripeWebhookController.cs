@@ -2,6 +2,7 @@
 using MaldsShopWebApp.Interfaces;
 using MaldsShopWebApp.Repository;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe;
@@ -16,30 +17,22 @@ namespace MaldsShopWebApp.Controllers
         private readonly ILogger<StripeWebhookController> _logger;
         private readonly StripeSettings _stripeSettings;
         private readonly IBackgroundTaskQueue _taskQueue;
-        private readonly IUserRepository _userRepository;
-        private readonly IProductRepository _productRepository;
-        private readonly IOrderRepository _orderRepository;
-        private readonly IShippingCartRepository _shippingCartRepository;
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly IEmailSender _emailSender;
 
         public StripeWebhookController(
             ILogger<StripeWebhookController> logger,
             IOptions<StripeSettings> stripeSettings,
             IBackgroundTaskQueue taskQueue,
-            IUserRepository userRepository,
-            IProductRepository productRepository,
-            IOrderRepository orderRepository,
-            IShippingCartRepository shippingCartRepository,
-            IServiceScopeFactory scopeFactory)
+            IServiceScopeFactory scopeFactory,
+            IEmailSender emailSender
+            )
         {
             _logger = logger;
             _stripeSettings = stripeSettings.Value;
             _taskQueue = taskQueue;
-            _userRepository = userRepository;
-            _productRepository = productRepository;
-            _orderRepository = orderRepository;
-            _shippingCartRepository = shippingCartRepository;
             _scopeFactory = scopeFactory;
+            _emailSender = emailSender;
         }
 
         [HttpPost("listen")]
@@ -115,6 +108,9 @@ namespace MaldsShopWebApp.Controllers
                         }
 
                         await userRepository.UpdateLastActivityAsync(user.Email);
+
+                        EmailMessages email = new EmailMessages();
+                        await _emailSender.SendEmailAsync(user.Email, "Order Confirmation - "+order.OrderId, email.OrderConfirmation(user.ShippingCart));
 
                         await shippingCartRepository.ClearShippingCart(user.ShippingCart);
                     }

@@ -34,7 +34,7 @@
         {
             <tr>
                 <th scope="row">@i</th>
-                <td><a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId">@item.Product.Title</a></td>
+                <td><a asp-controller="Product" asp-action="Details" asp-route-id="@item.Product.ProductId">@item.Product.Title</a></td>
                 <td>@item.Quantity</td>
                 <td>@Math.Floor((decimal)item.Product.Price / 100).<small>@(string.Format("{0:00}", item.Product.Price % 100))</small> UAH</td>
                 <td>@Math.Floor((decimal)(item.Product.Price * item.Quantity) / 100).<small>@(string.Format("{0:00}", (item.Product.Price * item.Quantity) % 100))</small> UAH</td>
@@ -45,7 +45,7 @@
     </tbody>
 </table>
 <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-    <a href="#" type="button" class="btn btn-outline-secondary" asp-action="Index" asp-controller="ShoppingCart">
+    <a type="button" class="btn btn-outline-secondary" asp-action="Index" asp-controller="ShoppingCart">
         Go Back
     </a>
     @if (Model.IsEnoughStock)

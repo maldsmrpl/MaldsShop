@@ -1,5 +1,18 @@
 ﻿@model OrderViewModel
 
+<div class="alert alert-dismissible alert-success">
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <p>As part of a playful experience, we're showcasing some hilarious items you can "purchase" just for laughs. No real money will be exchanged, so feel free to explore and enjoy the novelty of shopping without spending a dime!</p>
+    <h4>To complete your mock purchases, please use the following dummy credit card details:</h4>
+    <ul>
+        <li><strong>Card Number:</strong> 4242 4242 4242 4242</li>
+        <li><strong>Expiration Date:</strong> Any future date (MM/YY)</li>
+        <li><strong>CVV:</strong> Any 3 digits</li>
+    </ul>
+    <p>This is all in good fun and part of a test mode environment, powered by Stripe, to simulate transactions. Dive in and enjoy the playful shopping experience!</p>
+    <p>Happy browsing and "buying"! 😄</p>
+</div>
+<br />
 <h3>Your order:</h3>
 <br />
 <table class="table table-hover">
@@ -31,13 +44,13 @@
         }
     </tbody>
 </table>
-<div style="text-align: center;">
-    <a type="button" class="btn btn-outline-secondary" asp-action="Index" asp-controller="ShoppingCart">
+<div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+    <a href="#" type="button" class="btn btn-outline-secondary" asp-action="Index" asp-controller="ShoppingCart">
         Go Back
     </a>
-    @if(Model.IsEnoughStock)
+    @if (Model.IsEnoughStock)
     {
-        <form asp-controller="Order" asp-action="Checkout" method="post">
+        <form asp-controller="Order" asp-action="Checkout" method="post" style="margin: 0;">
             <input type="hidden" asp-for="@Model.ShippingCart" id="ShippingCart" name="ShippingCart" />
             <input type="hidden" asp-for="@Model.UserEmail" id="UserEmail" name="UserEmail" />
             <button type="submit" class="btn btn-outline-primary">

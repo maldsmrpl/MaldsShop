@@ -108,7 +108,7 @@
                     <div class="progress">
                         <div class="progress-bar" role="progressbar" style="width: @avaragePercent%;" aria-valuenow="@avarageScore" aria-valuemin="0" aria-valuemax="5"></div>
                     </div>
-                    <input type="text" readonly class="form-control-plaintext" value="@avarageScore.ToString("0.00")">
+                    <input type="text" readonly class="form-control-plaintext" value="@(avarageScore.ToString("0.00") + " / 5.00")">
                 </div>
             </div>
 
@@ -159,7 +159,7 @@
                         <div class="border p-2 mb-2">
                             <p>Reviewed by user: @review.AppUser.Email</p>
                             <p>@review.ReviewText</p>
-                            <p>Score: @review.ReviewScore</p>
+                            <p>Score: @review.ReviewScore / 5</p>
                             <p>Reviewed on: @review.AddedTime.ToString("g") @(review.EditedTime.HasValue ? $"(Edited: {review.EditedTime.Value.ToString("g")})" : "")</p>
                             @if (isAuthenticated && User.Identity!.Name != null)
                             { @if (@review.AppUser.Email == @User.Identity.Name)

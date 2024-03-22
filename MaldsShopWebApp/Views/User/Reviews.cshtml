@@ -1,5 +1,43 @@
-﻿@{
+﻿@model UserReviewViewModel
+
+@{
     ViewData["Title"] = "My Reviews";
 }
 
 <h3>@ViewData["Title"]</h3>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Review No.</th>
+            <th scope="col">Product</th>
+            <th scope="col">Text</th>
+            <th scope="col">Score</th>
+            <th scope="col">Time Added</th>
+            <th scope="col">Time Edited</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var review in Model.Reviews)
+        {
+
+            <tr>
+                <th scope="row">@review.ReviewId</th>
+                <td>@review.Product.Title</td>
+                <td>@review.ReviewText</td>
+                <td>@review.ReviewScore / 5</td>
+                <td>@review.AddedTime</td>
+                <td>@review.EditedTime</td>
+                <td>
+                    <a asp-controller="Review" asp-action="Edit" type="button" class="btn btn-outline-secondary">
+                        Edit
+                    </a>
+                    <a asp-controller="Review" asp-action="Delete" type="button" class="btn btn-outline-danger">
+                        Delete
+                    </a></td>
+            </tr>
+        }
+    </tbody>
+</table>

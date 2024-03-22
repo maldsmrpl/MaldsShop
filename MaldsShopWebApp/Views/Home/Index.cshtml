@@ -75,7 +75,7 @@
                                     totalReviews = product.Reviews.Count();
                                     avarageScore = product.Reviews.Average(s => s.ReviewScore);
                                 }
-                                string productReview = $"Avarage score: {avarageScore.ToString("0.00")} (Total reviews: {totalReviews.ToString()})";
+                                string productReview = $"Avarage score: {avarageScore.ToString("0.00")} / 5.00 (Total reviews: {totalReviews.ToString()})";
                             }
                             @productReview
                         </p>

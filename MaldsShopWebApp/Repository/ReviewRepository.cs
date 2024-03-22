@@ -54,6 +54,7 @@ namespace MaldsShopWebApp.Repository
             {
                 return await _context.Reviews
                     .Where(r => r.AppUserId == user.Id)
+                    .Include(p => p.Product)
                     .ToListAsync();
             }
             return new List<Review>();

@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /MaldsShopWebApp/appsettings.json
 /MaldsShopWebApp/wwwroot/css/BootswatchScetchyTheme.css
+/MaldsShopWebApp/wwwroot/css/BootstrapSketchy.css

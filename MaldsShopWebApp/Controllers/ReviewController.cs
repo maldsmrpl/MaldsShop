@@ -23,7 +23,7 @@ namespace MaldsShopWebApp.Controllers
 
         public async Task<IActionResult> Index(int id)
         {
-            var reviews = await _reviewRepository.GetAllByProductId(id);
+            var reviews = await _reviewRepository.GetAllByProductIdAsync(id);
 
             var reviewViewModels = reviews.Select(review => new ReviewViewModel
             {
@@ -71,7 +71,7 @@ namespace MaldsShopWebApp.Controllers
         [Authorize]
         public async Task<IActionResult> Details(int id)
         {
-            var review = await _reviewRepository.GetById(id);
+            var review = await _reviewRepository.GetByIdAsync(id);
             if (review == null)
             {
                 return NotFound();
@@ -92,7 +92,7 @@ namespace MaldsShopWebApp.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
-            var review = await _reviewRepository.GetById(id);
+            var review = await _reviewRepository.GetByIdAsync(id);
             if (review == null)
             {
                 return NotFound();
@@ -123,7 +123,7 @@ namespace MaldsShopWebApp.Controllers
                 int productId = 0;
                 try
                 {
-                    var review = await _reviewRepository.GetById(id);
+                    var review = await _reviewRepository.GetByIdAsync(id);
                     review.ReviewText = reviewViewModel.ReviewText;
                     review.ReviewScore = reviewViewModel.ReviewScore;
                     review.EditedTime = DateTime.UtcNow;
@@ -150,7 +150,7 @@ namespace MaldsShopWebApp.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
-            var review = await _reviewRepository.GetById(id);
+            var review = await _reviewRepository.GetByIdAsync(id);
             if (review == null)
             {
                 return NotFound();
@@ -165,13 +165,13 @@ namespace MaldsShopWebApp.Controllers
         {
             await _reviewRepository.DeleteAsync(id);
 
-            var review = await _reviewRepository.GetById(id);
+            var review = await _reviewRepository.GetByIdAsync(id);
             return RedirectToAction(nameof(Index), new { productId = review.ProductId });
         }
 
         private async Task<bool> ReviewExists(int id)
         {
-            var review = await _reviewRepository.GetById(id);
+            var review = await _reviewRepository.GetByIdAsync(id);
             return review != null;
         }
     }

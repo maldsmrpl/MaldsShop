@@ -40,14 +40,14 @@ namespace MaldsShopWebApp.Repository
             return false;
         }
 
-        public async Task<IEnumerable<Review>> GetAllByUserId(string userId)
+        public async Task<IEnumerable<Review>> GetAllByUserIdAsync(string userId)
         {
             return await _context.Reviews
                 .Where(r => r.AppUserId == userId)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Review>> GetAllByUserEmail(string email)
+        public async Task<IEnumerable<Review>> GetAllByUserEmailAsync(string email)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (user != null)
@@ -59,13 +59,13 @@ namespace MaldsShopWebApp.Repository
             return new List<Review>();
         }
 
-        public async Task<IEnumerable<Review>> GetAllByProductId(int productId)
+        public async Task<IEnumerable<Review>> GetAllByProductIdAsync(int productId)
         {
             return await _context.Reviews
                 .Where(r => r.ProductId == productId)
                 .ToListAsync();
         }
-        public async Task<Review> GetById(int reviewId)
+        public async Task<Review> GetByIdAsync(int reviewId)
         {
             return await _context.Reviews.FirstOrDefaultAsync(i => i.ReviewId == reviewId);
         }

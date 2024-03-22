@@ -9,9 +9,9 @@ namespace MaldsShopWebApp.Interfaces
         Task<bool> AddAsync(Review review);
         Task<bool> UpdateAsync(Review review);
         Task<bool> DeleteAsync(int reviewId);
-        Task<IEnumerable<Review>> GetAllByUserId(string userId);
-        Task<IEnumerable<Review>> GetAllByUserEmail(string email);
-        Task<IEnumerable<Review>> GetAllByProductId(int productId);
-        Task<Review> GetById(int reviewId);
+        Task<IEnumerable<Review>> GetAllByUserIdAsync(string userId);
+        Task<IEnumerable<Review>> GetAllByUserEmailAsync(string email);
+        Task<IEnumerable<Review>> GetAllByProductIdAsync(int productId);
+        Task<Review> GetByIdAsync(int reviewId);
     }
 }

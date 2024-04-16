@@ -11,25 +11,17 @@ namespace MaldsShopWebApp.Repository
         {
             _context = context;
         }
-        public async Task<bool> AddAsync(Order order)
+        public async Task AddAsync(Order order)
         {
             await _context.Orders.AddAsync(order);
-            return await SaveAsync();
         }
-        public async Task<bool> UpdateAsync(Order order)
+        public async Task UpdateAsync(Order order)
         {
             _context.Orders.Update(order);
-            return await SaveAsync();
         }
-        public async Task<bool> DeleteAsync(Order order)
+        public async Task DeleteAsync(Order order)
         {
             _context.Orders.Remove(order);
-            return await SaveAsync();
-        }
-        public async Task<bool> SaveAsync()
-        {
-            var saved = await _context.SaveChangesAsync();
-            return saved > 0 ? true : false;
         }
         public async Task<Order> GetOrderByIdAsync(int id)
         {
@@ -41,15 +33,15 @@ namespace MaldsShopWebApp.Repository
 
             return order;
         }
-        public async Task<bool> ConfirmPaymentAsync(Order order)
+        public void ConfirmPaymentAsync(Order order)
         {
             if (order == null || order.IsPaid)
             {
-                return false;
+                throw new InvalidOperationException("Order is already paid or null.");
             }
 
             order.IsPaid = true;
-            return await UpdateAsync(order);
+            UpdateAsync(order);
         }
         public async Task<IEnumerable<Order>> GetOrdersByUserEmailLazyAsync(string email)
         {

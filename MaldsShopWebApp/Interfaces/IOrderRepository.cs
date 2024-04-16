@@ -2,17 +2,16 @@
 {
     public interface IOrderRepository
     {
-        public Task<bool> AddAsync(Order order);
-        public Task<bool> UpdateAsync(Order order);
-        public Task<bool> DeleteAsync(Order order);
-        public Task<bool> SaveAsync();
-        public Task<Order> GetOrderByIdAsync(int id);
-        public Task<bool> ConfirmPaymentAsync(Order order);
-        public Task<IEnumerable<Order>> GetOrdersByUserEmailLazyAsync(string email);
-        public Task<IEnumerable<Order>> GetOrdersByUserIdLazyAsync(string userId);
-        public Task<IEnumerable<Order>> GetOrdersByUserEmailAsync(string email);
-        public Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId);
-        public Task<IEnumerable<Order>> GetOrdersByProductIdAsync(int productId);
-        public Task<Order> FindByStripeSessionIdAsync(string sessionId);
+        Task AddAsync(Order order);
+        Task UpdateAsync(Order order);
+        Task DeleteAsync(Order order);
+        Task<Order> GetOrderByIdAsync(int id);
+        void ConfirmPaymentAsync(Order order);
+        Task<IEnumerable<Order>> GetOrdersByUserEmailLazyAsync(string email);
+        Task<IEnumerable<Order>> GetOrdersByUserIdLazyAsync(string userId);
+        Task<IEnumerable<Order>> GetOrdersByUserEmailAsync(string email);
+        Task<IEnumerable<Order>> GetOrdersByUserIdAsync(string userId);
+        Task<IEnumerable<Order>> GetOrdersByProductIdAsync(int productId);
+        Task<Order> FindByStripeSessionIdAsync(string sessionId);
     }
 }

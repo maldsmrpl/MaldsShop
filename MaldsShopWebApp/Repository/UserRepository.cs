@@ -7,17 +7,14 @@ namespace MaldsShopWebApp.Repository
     public class UserRepository : IUserRepository
     {
         private readonly ApplicationDbContext _context;
-
         public UserRepository(ApplicationDbContext context)
         {
             _context = context;
         }
-
         public async Task AddAsync(AppUser user)
         {
             await _context.Users.AddAsync(user);
         }
-
         public void Delete(AppUser user)
         {
             _context.Users.Remove(user);
@@ -107,11 +104,11 @@ namespace MaldsShopWebApp.Repository
 
             return user;
         }
-        public async Task<bool> UpdateLastActivityAsync(string email)
+        public async Task UpdateLastActivityAsync(string email)
         {
             var user = await GetByEmailLazyAsync(email);
             user.LastActivityTime = DateTime.UtcNow;
-            return UpdateAsync(user);
+            Update(user);
         }
     }
 }

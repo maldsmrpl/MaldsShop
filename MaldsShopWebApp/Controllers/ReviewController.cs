@@ -10,20 +10,16 @@ namespace MaldsShopWebApp.Controllers
 {
     public class ReviewController : Controller
     {
-        private readonly IReviewRepository _reviewRepository;
-        private readonly IProductRepository _productRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ReviewController(IReviewRepository reviewRepository, IUserRepository userRepository, IProductRepository productRepository)
+        public ReviewController(IUnitOfWork unitOfWork)
         {
-            _reviewRepository = reviewRepository;
-            _userRepository = userRepository;
-            _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<IActionResult> Index(int id)
         {
-            var reviews = await _reviewRepository.GetAllByProductIdAsync(id);
+            var reviews = await _unitOfWork.Reviews.GetAllByProductIdAsync(id);
 
             var reviewViewModels = reviews.Select(review => new ReviewViewModel
             {
@@ -33,7 +29,6 @@ namespace MaldsShopWebApp.Controllers
                 ReviewText = review.ReviewText,
                 ReviewScore = review.ReviewScore,
                 ProductId = review.ProductId,
-                // Assuming UserEmail is part of your Review model or you have a method to fetch it.
             }).ToList();
 
             return View(reviewViewModels);
@@ -56,14 +51,15 @@ namespace MaldsShopWebApp.Controllers
             {
                 var review = new Review
                 {
-                    AppUserId = ( await _userRepository.GetByEmailAsync(User.Identity.Name)).Id,
+                    AppUserId = ( await _unitOfWork.Users.GetByEmailAsync(User.Identity.Name)).Id,
                     ProductId = reviewViewModel.ProductId,
                     ReviewText = reviewViewModel.ReviewText,
                     ReviewScore = reviewViewModel.ReviewScore,
                     AddedTime = DateTime.UtcNow
                 };
 
-                await _reviewRepository.AddAsync(review);
+                await _unitOfWork.Reviews.AddAsync(review);
+                await _unitOfWork.CompleteAsync();
                 return RedirectToAction("Details", "Product", new { id = review.ProductId });
             }
             return View(reviewViewModel);
@@ -71,7 +67,7 @@ namespace MaldsShopWebApp.Controllers
         [Authorize]
         public async Task<IActionResult> Details(int id)
         {
-            var review = await _reviewRepository.GetByIdAsync(id);
+            var review = await _unitOfWork.Reviews.GetByIdAsync(id);
             if (review == null)
             {
                 return NotFound();
@@ -92,7 +88,7 @@ namespace MaldsShopWebApp.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
-            var review = await _reviewRepository.GetByIdAsync(id);
+            var review = await _unitOfWork.Reviews.GetByIdAsync(id);
             if (review == null)
             {
                 return NotFound();
@@ -123,12 +119,12 @@ namespace MaldsShopWebApp.Controllers
                 int productId = 0;
                 try
                 {
-                    var review = await _reviewRepository.GetByIdAsync(id);
+                    var review = await _unitOfWork.Reviews.GetByIdAsync(id);
                     review.ReviewText = reviewViewModel.ReviewText;
                     review.ReviewScore = reviewViewModel.ReviewScore;
                     review.EditedTime = DateTime.UtcNow;
 
-                    await _reviewRepository.UpdateAsync(review);
+                    await _unitOfWork.Reviews.UpdateAsync(review);
                     productId = review.ProductId;
                 }
                 catch
@@ -150,7 +146,7 @@ namespace MaldsShopWebApp.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
-            var review = await _reviewRepository.GetByIdAsync(id);
+            var review = await _unitOfWork.Reviews.GetByIdAsync(id);
             if (review == null)
             {
                 return NotFound();
@@ -163,15 +159,16 @@ namespace MaldsShopWebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _reviewRepository.DeleteAsync(id);
+            await _unitOfWork.Reviews.DeleteAsync(id);
+            await _unitOfWork.CompleteAsync();
 
-            var review = await _reviewRepository.GetByIdAsync(id);
+            var review = await _unitOfWork.Reviews.GetByIdAsync(id);
             return RedirectToAction(nameof(Index), new { productId = review.ProductId });
         }
 
         private async Task<bool> ReviewExists(int id)
         {
-            var review = await _reviewRepository.GetByIdAsync(id);
+            var review = await _unitOfWork.Reviews.GetByIdAsync(id);
             return review != null;
         }
     }

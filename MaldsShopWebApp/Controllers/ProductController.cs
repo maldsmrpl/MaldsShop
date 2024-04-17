@@ -10,20 +10,21 @@ namespace MaldsShopWebApp.Controllers
 {
     public class ProductController : Controller
     {
-        private readonly IProductRepository _productRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IPhotoService _photoService;
 
-        public ProductController(IProductRepository productRepository, IUserRepository userRepository, IPhotoService photoService)
+        public ProductController(
+            IUnitOfWork unitOfWork,
+            IPhotoService photoService
+            )
         {
-            _productRepository = productRepository;
-            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
             _photoService = photoService;
         }
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var products = await _productRepository.GetAllAsync();
+            var products = await _unitOfWork.Products.GetAllAsync();
             IndexProductViewModel productsVM = new IndexProductViewModel()
             {
                 Products = products
@@ -52,7 +53,8 @@ namespace MaldsShopWebApp.Controllers
                     ImageUrl = result.SecureUrl.ToString(),
                     ItemsSold = 0
                 };
-                _productRepository.AddAsync(product);
+                await _unitOfWork.Products.AddAsync(product);
+                await _unitOfWork.CompleteAsync();
                 return RedirectToAction("Index", "Home");
             }
             else
@@ -64,11 +66,11 @@ namespace MaldsShopWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
             if (product == null) return RedirectToAction("Index");
             var detailsVM = new DetailsProductViewModel()
             {
-                isAdmin = await _userRepository.IsAdminByEmailAsync(User.Identity.Name),
+                isAdmin = await _unitOfWork.Users.IsAdminByEmailAsync(User.Identity.Name),
                 ProductId = product.ProductId,
                 Title = product.Title,
                 Description = product.Description,
@@ -94,7 +96,7 @@ namespace MaldsShopWebApp.Controllers
         [Authorize(Roles = UserRoles.Admin)]
         public async Task<IActionResult> Edit(int id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
             if (product == null) return RedirectToAction("Index");
             var editVM = new EditProductViewModel()
             {
@@ -128,7 +130,7 @@ namespace MaldsShopWebApp.Controllers
                 return View("Edit", editVM);
             }
 
-            var oldProduct = await _productRepository.GetByIdAsync(id);
+            var oldProduct = await _unitOfWork.Products.GetByIdAsync(id);
 
             editVM.Reviews = oldProduct.Reviews;
             editVM.ProductId = id;
@@ -167,26 +169,21 @@ namespace MaldsShopWebApp.Controllers
                 product.ImageUrl = editVM.ImageUrl;
             }
 
-            _productRepository.UpdateAsync(product);
+            await _unitOfWork.Products.UpdateAsync(product);
 
             return RedirectToAction("Index", "Home");
         }
         [HttpGet, ActionName("Delete")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var productDetails = await _productRepository.GetByIdAsync(id);
+            var productDetails = await _unitOfWork.Products.GetByIdAsync(id);
 
             if (productDetails == null)
             {
                 return View("Error");
             }
 
-            //if (!string.IsNullOrEmpty(productDetails.ImageUrl))
-            //{
-            //    var deletionResult = _photoService.DeletePhotoAsync(productDetails.ImageUrl);
-            //}
-
-            _productRepository.DeleteAsync(productDetails);
+            await _unitOfWork.Products.DeleteAsync(productDetails);
             return RedirectToAction("Index", "Home");
         }
     }

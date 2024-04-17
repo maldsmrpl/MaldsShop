@@ -17,27 +17,23 @@ namespace MaldsShopWebApp.Repository
             _context = context;
         }
 
-        public async Task<bool> AddAsync(Review review)
+        public async Task AddAsync(Review review)
         {
             await _context.Reviews.AddAsync(review);
-            return await SaveAsync();
         }
 
-        public async Task<bool> UpdateAsync(Review review)
+        public async Task UpdateAsync(Review review)
         {
             _context.Reviews.Update(review);
-            return await SaveAsync();
         }
 
-        public async Task<bool> DeleteAsync(int reviewId)
+        public async Task DeleteAsync(int reviewId)
         {
             var review = await _context.Reviews.FindAsync(reviewId);
             if (review != null)
             {
                 _context.Reviews.Remove(review);
-                return await SaveAsync();
             }
-            return false;
         }
 
         public async Task<IEnumerable<Review>> GetAllByUserIdAsync(string userId)

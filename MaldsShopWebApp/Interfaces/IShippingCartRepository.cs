@@ -2,13 +2,11 @@
 {
     public interface IShippingCartRepository
     {
+        Task AddAsync(ShippingCart shippingCart);
+        Task UpdateAsync(ShippingCart shippingCart);
+        Task AddToShippingCartAsync(ShippingCartItem item, string userEmail);
+        Task DeleteFromShippingCart(ShippingCartItem item, string userEmail);
+        Task ClearShippingCart(ShippingCart shippingCart);
         Task<ShippingCart>? GetShippingCartByUserEmail(string userEmail);
-        Task<bool> AddToShippingCart(ShippingCartItem item, string userEmail);
-        Task<bool> DeleteFromShippingCart(ShippingCartItem item, string userEmail);
-        bool Save();
-        Task<bool> UpdateAsync(ShippingCart shippingCart);
-        Task<bool> SaveAsync();
-        Task<bool> Add(ShippingCart shippingCart);
-        Task<bool> ClearShippingCart(ShippingCart shippingCart);
     }
 }

@@ -13,15 +13,15 @@ namespace MaldsShopWebApp.Repository
             _context = context;
             _userRepository = userRepository;
         }
-        public async Task<ShippingCart>? GetShippingCartByUserEmail(string userEmail)
+        public async Task AddAsync(ShippingCart shippingCart)
         {
-            var user = await _userRepository.GetByEmailAsync(userEmail);
-            return await _context.ShippingCarts
-                .Include(i => i.ShippingCartItems)
-                .ThenInclude(p => p.Product)
-                .FirstOrDefaultAsync(e => e.AppUserId == user.Id);
+            _context.ShippingCarts.AddAsync(shippingCart);
         }
-        public async Task<bool> AddToShippingCart(ShippingCartItem item, string userEmail)
+        public async Task UpdateAsync(ShippingCart shippingCart)
+        {
+            _context.ShippingCarts.Update(shippingCart);
+        }
+        public async Task AddToShippingCartAsync(ShippingCartItem item, string userEmail)
         {
             var shippingCart = await GetShippingCartByUserEmail(userEmail);
             var currentUser = await _userRepository.GetByEmailAsync(userEmail);
@@ -38,51 +38,27 @@ namespace MaldsShopWebApp.Repository
 
             _context.Products.Attach(item.Product);
             shippingCart.ShippingCartItems.Add(item);
-
-            return await SaveAsync();
         }
-
-        public async Task<bool> DeleteFromShippingCart(ShippingCartItem item, string userEmail)
+        public async Task DeleteFromShippingCart(ShippingCartItem item, string userEmail)
         {
             var shippingCart = await GetShippingCartByUserEmail(userEmail);
             if (shippingCart != null)
             {
                 shippingCart.ShippingCartItems.FirstOrDefault(i => i.ShippingCartItemId == item.ShippingCartItemId);
             }
-            return Save();
         }
-        public bool Save()
-        {
-            var saved = _context.SaveChanges();
-            return saved > 0 ? true : false;
-        }
-        public Task<bool> Add(ShippingCart shippingCart)
-        {
-            _context.ShippingCarts.Add(shippingCart);
-            return SaveAsync();
-        }
-        public async Task<bool> SaveAsync()
-        {
-            try
-            {
-                var saved = await _context.SaveChangesAsync();
-                return saved > 0;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                throw;
-            }
-        }
-        public async Task<bool> UpdateAsync(ShippingCart shippingCart)
-        {
-            _context.ShippingCarts.Update(shippingCart);
-            return await SaveAsync();
-        }
-        public async Task<bool> ClearShippingCart(ShippingCart shippingCart)
+        public async Task ClearShippingCart(ShippingCart shippingCart)
         {
             shippingCart.ShippingCartItems.Clear();
-            return await UpdateAsync(shippingCart);
+            await UpdateAsync(shippingCart);
+        }
+        public async Task<ShippingCart>? GetShippingCartByUserEmail(string userEmail)
+        {
+            var user = await _userRepository.GetByEmailAsync(userEmail);
+            return await _context.ShippingCarts
+                .Include(i => i.ShippingCartItems)
+                .ThenInclude(p => p.Product)
+                .FirstOrDefaultAsync(e => e.AppUserId == user.Id);
         }
     }
 }

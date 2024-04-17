@@ -11,21 +11,15 @@ namespace MaldsShopWebApp.Controllers
 {
     public class ShippingCartController : Controller
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IShippingCartRepository _shippingCartRepository;
-        private readonly IProductRepository _productRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly CartCountSession _cartCountSession;
 
         public ShippingCartController(
-            IUserRepository userRepository, 
-            IShippingCartRepository shippingCartRepository, 
-            IProductRepository productRepository,
+            IUnitOfWork unitOfWork,
             CartCountSession cartCountSession
             )
         {
-            _userRepository = userRepository;
-            _shippingCartRepository = shippingCartRepository;
-            _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
             _cartCountSession = cartCountSession;
         }
         [Authorize]
@@ -33,7 +27,7 @@ namespace MaldsShopWebApp.Controllers
         public async Task<IActionResult> Index()
         {
             var userEmail = User.Identity.Name;
-            var user = await _userRepository.GetByEmailAsync(userEmail);
+            var user = await _unitOfWork.Users.GetByEmailAsync(userEmail);
             var shippingCartVM = new ShippingCartViewModel()
             {
                 ShippingCart = user.ShippingCart,
@@ -56,12 +50,12 @@ namespace MaldsShopWebApp.Controllers
         public async Task<IActionResult> AddToCart(int productId, bool isRedirected)
         {
             var userEmail = User.Identity.Name;
-            var user = await _userRepository.GetByEmailAsync(userEmail);
-            var product = await _productRepository.GetByIdAsync(productId);
+            var user = await _unitOfWork.Users.GetByEmailAsync(userEmail);
+            var product = await _unitOfWork.Products.GetByIdAsync(productId);
 
             if (user != null && product != null)
             {
-                var shippingCart = await _shippingCartRepository.GetShippingCartByUserEmail(userEmail);
+                var shippingCart = await _unitOfWork.ShippingCarts.GetShippingCartByUserEmail(userEmail);
 
                 if (shippingCart == null)
                 {
@@ -70,7 +64,7 @@ namespace MaldsShopWebApp.Controllers
                         AppUserId = user.Id,
                         ShippingCartItems = new List<ShippingCartItem>(),
                     };
-                    await _shippingCartRepository.Add(shippingCart);
+                    await _unitOfWork.ShippingCarts.AddAsync(shippingCart);
                 }
 
                 var cartItem = shippingCart.ShippingCartItems.FirstOrDefault(ci => ci.ProductId == productId);
@@ -89,9 +83,9 @@ namespace MaldsShopWebApp.Controllers
                     shippingCart.ShippingCartItems.Add(cartItem);
                 }
 
-                await _shippingCartRepository.SaveAsync();
+                await _unitOfWork.CompleteAsync();
 
-                var updatedUser = await _userRepository.GetByEmailAsync(userEmail);
+                var updatedUser = await _unitOfWork.Users.GetByEmailAsync(userEmail);
 
                 var cartVM = new ShippingCartViewModel
                 {
@@ -117,12 +111,12 @@ namespace MaldsShopWebApp.Controllers
         public async Task<IActionResult> RemoveFromCart(int productId, bool isRedirected)
         {
             var userEmail = User.Identity.Name;
-            var user = await _userRepository.GetByEmailAsync(userEmail);
-            var product = await _productRepository.GetByIdAsync(productId);
+            var user = await _unitOfWork.Users.GetByEmailAsync(userEmail);
+            var product = await _unitOfWork.Products.GetByIdAsync(productId);
 
             if (user != null && product != null)
             {
-                var shippingCart = await _shippingCartRepository.GetShippingCartByUserEmail(userEmail);
+                var shippingCart = await _unitOfWork.ShippingCarts.GetShippingCartByUserEmail(userEmail);
                 var cartItem = shippingCart.ShippingCartItems.FirstOrDefault(ci => ci.ProductId == productId);
 
                 if (cartItem != null)
@@ -133,9 +127,9 @@ namespace MaldsShopWebApp.Controllers
                         shippingCart.ShippingCartItems.Remove(cartItem);
                     }
 
-                    await _shippingCartRepository.SaveAsync();
+                    await _unitOfWork.CompleteAsync();
 
-                    var updatedUser = await _userRepository.GetByEmailAsync(userEmail);
+                    var updatedUser = await _unitOfWork.Users.GetByEmailAsync(userEmail);
                     var cartVM = new ShippingCartViewModel
                     {
                         UserEmail = userEmail,

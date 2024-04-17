@@ -1,6 +1,7 @@
 ﻿using MaldsShopWebApp.Data;
 using MaldsShopWebApp.Helpers;
 using MaldsShopWebApp.Interfaces;
+using MaldsShopWebApp.Repository;
 using MaldsShopWebApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -15,15 +16,21 @@ namespace MaldsShopWebApp.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly IEmailSender _emailSender;
-		private readonly IUserRepository _userRepository;
+		private readonly IUnitOfWork _unitOfWork;
 
-		public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ApplicationDbContext context, IEmailSender emailSender, IUserRepository userRepository)
+		public AccountController(
+            UserManager<AppUser> userManager, 
+            SignInManager<AppUser> signInManager, 
+            ApplicationDbContext context, 
+            IEmailSender emailSender, 
+            IUnitOfWork unitOfWork
+            )
         {
             _context = context;
             _signInManager = signInManager;
             _userManager = userManager;
             _emailSender = emailSender;
-			_userRepository = userRepository;
+            _unitOfWork = unitOfWork;
 		}
         [HttpGet]
         public IActionResult Login()
@@ -51,7 +58,8 @@ namespace MaldsShopWebApp.Controllers
                         var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, true, false);
                         if (result.Succeeded)
                         {
-                            await _userRepository.UpdateLastActivityAsync(user.Email);
+                            await _unitOfWork.Users.UpdateLastActivityAsync(user.Email);
+                            await _unitOfWork.CompleteAsync();
                             return RedirectToAction("Index", "Home");
                         }
                     }

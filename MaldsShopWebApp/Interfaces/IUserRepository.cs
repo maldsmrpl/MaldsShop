@@ -2,16 +2,15 @@
 {
     public interface IUserRepository
     {
+        Task AddAsync(AppUser user);
+        void Update(AppUser user);
+        void Delete(AppUser user);
         Task<IEnumerable<AppUser>> GetAllUsers();
         Task<AppUser> GetUserById(string id);
-        bool Add(AppUser user);
-        bool Update(AppUser user);
-        bool Delete(AppUser user);
-        bool Save();
-        bool IsAdminById(string userId);
         Task<bool> IsAdminByIdAsync(string userId);
-        Task<AppUser> GetByEmailAsync(string email);
         Task<bool> IsAdminByEmailAsync(string userEmail);
+        Task<AppUser> GetByEmailAsync(string email);
+        Task<AppUser> GetByEmailLazyAsync(string email);
         Task<bool> UpdateLastActivityAsync(string email);
 
 	}

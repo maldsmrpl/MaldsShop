@@ -13,52 +13,26 @@ namespace MaldsShopWebApp.Repository
             _context = context;
         }
 
-        public bool Add(AppUser user)
+        public async Task AddAsync(AppUser user)
         {
-            _context.Users.Add(user);
-            return Save();
+            await _context.Users.AddAsync(user);
         }
 
-        public bool Delete(AppUser user)
+        public void Delete(AppUser user)
         {
             _context.Users.Remove(user);
-            return Save();
         }
-
+        public void Update(AppUser user)
+        {
+            _context.Update(user);
+        }
         public async Task<IEnumerable<AppUser>> GetAllUsers()
         {
             return await _context.Users.ToListAsync();
         }
-
         public async Task<AppUser> GetUserById(string id)
         {
             return await _context.Users.FindAsync(id);
-        }
-
-        public bool Save()
-        {
-            var saved = _context.SaveChanges();
-            return saved > 0 ? true : false;
-        }
-
-        public bool Update(AppUser user)
-        {
-            _context.Update(user);
-            return Save();
-        }
-        public bool IsAdminById(string userId)
-        {
-            var adminRoleId = _context.Roles.FirstOrDefault(a => a.Name == UserRoles.Admin).Id;
-            if (adminRoleId == null) return false;
-
-            if (_context.UserRoles.FirstOrDefault(i => i.UserId == userId).RoleId == adminRoleId) 
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
         public async Task<bool> IsAdminByIdAsync(string userEmail)
         {
@@ -137,7 +111,7 @@ namespace MaldsShopWebApp.Repository
         {
             var user = await GetByEmailLazyAsync(email);
             user.LastActivityTime = DateTime.UtcNow;
-            return Update(user);
+            return UpdateAsync(user);
         }
     }
 }

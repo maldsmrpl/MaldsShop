@@ -125,6 +125,7 @@ namespace MaldsShopWebApp.Controllers
                     review.EditedTime = DateTime.UtcNow;
 
                     await _unitOfWork.Reviews.UpdateAsync(review);
+                    await _unitOfWork.CompleteAsync();
                     productId = review.ProductId;
                 }
                 catch

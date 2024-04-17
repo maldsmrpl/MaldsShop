@@ -170,6 +170,7 @@ namespace MaldsShopWebApp.Controllers
             }
 
             await _unitOfWork.Products.UpdateAsync(product);
+            await _unitOfWork.CompleteAsync();
 
             return RedirectToAction("Index", "Home");
         }

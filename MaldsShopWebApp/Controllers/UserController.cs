@@ -8,15 +8,11 @@ namespace MaldsShopWebApp.Controllers
     [Authorize]
     public class UserController : Controller
     {
-        private readonly IOrderRepository _orderRepository;
-        private readonly IReviewRepository _reviewRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UserController(IOrderRepository orderRepository, IReviewRepository reviewRepository, IUserRepository userRepository)
+        public UserController(IUnitOfWork unitOfWork)
         {
-            _orderRepository = orderRepository;
-            _reviewRepository = reviewRepository;
-            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
         }
         public async Task<IActionResult> Index()
         {
@@ -24,9 +20,9 @@ namespace MaldsShopWebApp.Controllers
 
             if (User.Identity.IsAuthenticated && userEmail != null)
             {
-                var user = await _userRepository.GetByEmailAsync(userEmail);
-                var orders = await _orderRepository.GetOrdersByUserEmailAsync(userEmail);
-                var reviews = await _reviewRepository.GetAllByUserEmailAsync(userEmail);
+                var user = await _unitOfWork.Users.GetByEmailAsync(userEmail);
+                var orders = await _unitOfWork.Orders.GetOrdersByUserEmailAsync(userEmail);
+                var reviews = await _unitOfWork.Reviews.GetAllByUserEmailAsync(userEmail);
 
                 UserIndexViewModel userVM = new UserIndexViewModel()
                 {
@@ -42,12 +38,13 @@ namespace MaldsShopWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(UserIndexViewModel userVM)
         {
-            var user = await _userRepository.GetByEmailAsync(userVM.UserEmail);
+            var user = await _unitOfWork.Users.GetByEmailAsync(userVM.UserEmail);
             if (user != null)
             {
                 user.FirstName = userVM.FirstName;
                 user.LastName = userVM.LastName;
-                _userRepository.Update(user);
+                _unitOfWork.Users.Update(user);
+                _unitOfWork.CompleteAsync();
             }
             return RedirectToAction("Index", "User");
         }
@@ -57,7 +54,7 @@ namespace MaldsShopWebApp.Controllers
 
             if (User.Identity.IsAuthenticated && userEmail != null)
             {
-                var orders = await _orderRepository.GetOrdersByUserEmailAsync(userEmail);
+                var orders = await _unitOfWork.Orders.GetOrdersByUserEmailAsync(userEmail);
                 UserOrdersViewModel ordersVM = new UserOrdersViewModel()
                 {
                     UserEmail = userEmail,
@@ -73,7 +70,7 @@ namespace MaldsShopWebApp.Controllers
 
             if (User.Identity.IsAuthenticated && userEmail != null)
             {
-                var reviews = await _reviewRepository.GetAllByUserEmailAsync(userEmail);
+                var reviews = await _unitOfWork.Reviews.GetAllByUserEmailAsync(userEmail);
                 UserReviewViewModel reviewVM = new UserReviewViewModel()
                 {
                     UserEmail = userEmail,

@@ -14,24 +14,15 @@ namespace MaldsShopWebApp.Controllers
     public class OrderController : Controller
     {
         private readonly StripeSettings _stripeSettings;
-        private readonly IUserRepository _userRepository;
-        private readonly IProductRepository _productRepository;
-        private readonly IOrderRepository _orderRepository;
-        private readonly IShippingCartRepository _shippingCartRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
         public OrderController(
-            IOptions<StripeSettings> stripeSettings, 
-            IUserRepository userRepository, 
-            IProductRepository productRepository, 
-            IOrderRepository orderRepository,
-            IShippingCartRepository shippingCartRepository
+            IOptions<StripeSettings> stripeSettings,
+            IUnitOfWork unitOfWork
             )
         {
             _stripeSettings = stripeSettings.Value;
-            _userRepository = userRepository;
-            _productRepository = productRepository;
-            _orderRepository = orderRepository;
-            _shippingCartRepository = shippingCartRepository;
+            _unitOfWork = unitOfWork;
         }
         public async Task<IActionResult> Details(int id)
         {
@@ -39,10 +30,10 @@ namespace MaldsShopWebApp.Controllers
             var email = User?.Identity?.Name;
             if (email != null)
             {
-                var user = await _userRepository.GetByEmailAsync(email);
+                var user = await _unitOfWork.Users.GetByEmailAsync(email);
                 if (user != null)
                 {
-                    var order = await _orderRepository.GetOrderByIdAsync(id);
+                    var order = await _unitOfWork.Orders.GetOrderByIdAsync(id);
                     if (order != null)
                     {
                         if (user.Id == order.AppUserId)
@@ -62,12 +53,12 @@ namespace MaldsShopWebApp.Controllers
         [Authorize]
         public async Task<IActionResult> Confirmation(OrderViewModel orderVM)
         {
-            var user = await _userRepository.GetByEmailAsync(orderVM.UserEmail);
+            var user = await _unitOfWork.Users.GetByEmailAsync(orderVM.UserEmail);
             orderVM.AppUser = user;
             orderVM.ShippingCart = user.ShippingCart;
             foreach (var item in user.ShippingCart.ShippingCartItems)
             {
-                if (!await _productRepository.IsEnoughStock(item.Product, item.Quantity))
+                if (!await _unitOfWork.Products.IsEnoughStock(item.Product, item.Quantity))
                 {
                     orderVM.IsEnoughStock = false;
                     break;
@@ -80,7 +71,7 @@ namespace MaldsShopWebApp.Controllers
         public async Task<IActionResult> Checkout(OrderViewModel orderVM)
         {
             StripeConfiguration.ApiKey = _stripeSettings.ApiKey;
-            var user = await _userRepository.GetByEmailAsync(orderVM.UserEmail);
+            var user = await _unitOfWork.Users.GetByEmailAsync(orderVM.UserEmail);
             orderVM.AppUser = user;
             orderVM.ShippingCart = user.ShippingCart;
 
@@ -142,13 +133,14 @@ namespace MaldsShopWebApp.Controllers
                 });
             }
 
-            await _orderRepository.AddAsync(order);
+            await _unitOfWork.Orders.AddAsync(order);
+            await _unitOfWork.CompleteAsync();
 
             return Redirect(session.Url);
         }
         public async Task<IActionResult> Success()
         {
-            var cart = await _shippingCartRepository.GetShippingCartByUserEmail(User.Identity.Name);
+            var cart = await _unitOfWork.ShippingCarts.GetShippingCartByUserEmail(User.Identity.Name);
             if (cart != null)
             {
                 int itemsInTheCart = 0;
